@@ -653,6 +653,9 @@ export const GameCanvas3D: React.FC<GameCanvasProps> = ({
     const groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
     const intersectPt = new THREE.Vector3();
 
+    let touchStartPos = { x: 0, y: 0 };
+    let isTouchSwiping = false;
+
     const onPointerDown = (e: PointerEvent) => {
       soundEngine.init();
       if (e.button === 2 || e.altKey) {
@@ -661,7 +664,13 @@ export const GameCanvas3D: React.FC<GameCanvasProps> = ({
         return;
       }
 
-      // Left click aims & shoots toward 3D cursor intersection on the ground
+      if (e.pointerType === 'touch') {
+        touchStartPos = { x: e.clientX, y: e.clientY };
+        lastPointerX = e.clientX;
+        isTouchSwiping = true;
+      }
+
+      // Left click / Tap aims & shoots toward 3D cursor intersection on the ground
       const rect = renderer.domElement.getBoundingClientRect();
       mouseNDC.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       mouseNDC.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
@@ -676,7 +685,7 @@ export const GameCanvas3D: React.FC<GameCanvasProps> = ({
     };
 
     const onPointerMove = (e: PointerEvent) => {
-      if (isPointerDragging) {
+      if (isPointerDragging || (isTouchSwiping && Math.abs(e.clientX - touchStartPos.x) > 10)) {
         const dx = e.clientX - lastPointerX;
         lastPointerX = e.clientX;
         cameraYaw -= dx * 0.007;
@@ -685,18 +694,27 @@ export const GameCanvas3D: React.FC<GameCanvasProps> = ({
 
     const onPointerUp = () => {
       isPointerDragging = false;
+      isTouchSwiping = false;
     };
 
     const onResize = () => {
       if (!container) return;
-      camera.aspect = container.clientWidth / Math.max(1, container.clientHeight);
+      const w = container.clientWidth || window.innerWidth;
+      const h = container.clientHeight || window.innerHeight;
+      camera.aspect = w / Math.max(1, h);
       camera.updateProjectionMatrix();
-      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.setSize(w, h);
     };
+
+    const resizeObserver = new ResizeObserver(() => {
+      onResize();
+    });
+    resizeObserver.observe(container);
 
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
     window.addEventListener('resize', onResize);
+    window.addEventListener('orientationchange', onResize);
     renderer.domElement.addEventListener('pointerdown', onPointerDown);
     window.addEventListener('pointermove', onPointerMove);
     window.addEventListener('pointerup', onPointerUp);
@@ -1132,26 +1150,33 @@ export const GameCanvas3D: React.FC<GameCanvasProps> = ({
       // 11. Camera Choreography (Third-Person, Top-Down 3D, or 3D Drone Cutscene Video)
       const px = playerPosRef.current.x;
       const pz = playerPosRef.current.z;
+      const aspect = camera.aspect;
+      // In portrait mode (narrower screen), pull back camera so player and surroundings remain visible
+      const portraitMultiplier = aspect < 1.0 ? Math.max(1.0, 1.25 / Math.max(0.4, aspect)) : 1.0;
 
       if (st.cameraMode === 'third_person') {
-        const camDist = st.inVehicle ? 11.5 : 8.2;
-        const camHeight = st.inVehicle ? 5.2 : 4.1;
+        const camDist = (st.inVehicle ? 11.5 : 8.2) * portraitMultiplier;
+        const camHeight = (st.inVehicle ? 5.2 : 4.1) * (1 + (portraitMultiplier - 1) * 0.45);
         const targetCamX = px - Math.sin(cameraYaw) * camDist;
         const targetCamZ = pz + Math.cos(cameraYaw) * camDist;
         camera.position.lerp(new THREE.Vector3(targetCamX, camHeight, targetCamZ), dt * 7);
         camera.lookAt(px, 1.6, pz);
       } else if (st.cameraMode === 'top_down') {
         // High-altitude 3D Top-Down Tactical Camera
-        const targetCamPos = new THREE.Vector3(px, 24, pz + 9);
+        const targetCamPos = new THREE.Vector3(
+          px,
+          24 * portraitMultiplier,
+          pz + 9 * portraitMultiplier
+        );
         camera.position.lerp(targetCamPos, dt * 6);
         camera.lookAt(px, 0.5, pz);
       } else {
         // 'drone_cinematic': 3D Aerial Video Flyover Mode ("3D-видео с видом сверху для большего погружения")
         droneCutsceneAngle += dt * 0.42;
-        const orbitRadius = 26;
+        const orbitRadius = 26 * portraitMultiplier;
         const targetCamPos = new THREE.Vector3(
           px + Math.cos(droneCutsceneAngle) * orbitRadius,
-          22 + Math.sin(droneCutsceneAngle * 2) * 3,
+          (22 + Math.sin(droneCutsceneAngle * 2) * 3) * portraitMultiplier,
           pz + Math.sin(droneCutsceneAngle) * orbitRadius
         );
         camera.position.lerp(targetCamPos, dt * 3);
@@ -1187,9 +1212,11 @@ export const GameCanvas3D: React.FC<GameCanvasProps> = ({
 
     return () => {
       cancelAnimationFrame(animFrameId);
+      resizeObserver.disconnect();
       window.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('keyup', onKeyUp);
       window.removeEventListener('resize', onResize);
+      window.removeEventListener('orientationchange', onResize);
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('pointerup', onPointerUp);
       renderer.dispose();

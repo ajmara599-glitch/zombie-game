@@ -13,6 +13,12 @@ import {
   MessageCircle,
   Sparkles,
   RotateCcw,
+  Menu,
+  Eye,
+  EyeOff,
+  ChevronDown,
+  ChevronUp,
+  RefreshCw,
 } from 'lucide-react';
 import {
   CameraMode,
@@ -43,6 +49,7 @@ import { GameCanvas3D } from './components/GameCanvas3D';
 import { ActiveModalType, GameModals } from './components/GameModals';
 import { VisualNovelModal } from './components/VisualNovelModal';
 import { MobileTouchHUD } from './components/MobileTouchHUD';
+import { MobileNavDrawer } from './components/MobileNavDrawer';
 import { soundEngine } from './audio/SoundEngine';
 import { PWAInstallButton, OfflineIndicator } from './components/PWAInstallButton';
 
@@ -91,6 +98,51 @@ export default function App() {
   const [showMobileControls, setShowMobileControls] = useState<boolean>(() => {
     return typeof window !== 'undefined' && (window.innerWidth < 900 || 'ontouchstart' in window);
   });
+
+  // Mobile Clean Screen & Ergonomic Collapsible Widgets
+  const [isCleanScreen, setIsCleanScreen] = useState<boolean>(false);
+  const [isAriaCollapsed, setIsAriaCollapsed] = useState<boolean>(() => {
+    return typeof window !== 'undefined' && window.innerWidth < 768;
+  });
+  const [isQuestCollapsed, setIsQuestCollapsed] = useState<boolean>(false);
+  const [isVitalsCollapsed, setIsVitalsCollapsed] = useState<boolean>(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
+  const [isPortrait, setIsPortrait] = useState<boolean>(() => {
+    return typeof window !== 'undefined' ? window.innerHeight > window.innerWidth : false;
+  });
+
+  useEffect(() => {
+    const handleOrientation = () => {
+      setIsPortrait(window.innerHeight > window.innerWidth);
+      if (window.innerWidth < 768) {
+        setIsAriaCollapsed(true);
+      }
+    };
+    window.addEventListener('resize', handleOrientation);
+    window.addEventListener('orientationchange', handleOrientation);
+    return () => {
+      window.removeEventListener('resize', handleOrientation);
+      window.removeEventListener('orientationchange', handleOrientation);
+    };
+  }, []);
+
+  const handleCycleWeapon = useCallback(() => {
+    const weaponOrder: WeaponId[] = [
+      'pulse_pistol',
+      'plasma_shotgun',
+      'cryo_rifle',
+      'throw_extinguisher',
+      'throw_bio_flask',
+      'throw_globe_disc',
+    ];
+    setSelectedWeapon((prev) => {
+      const idx = weaponOrder.indexOf(prev);
+      const next = weaponOrder[(idx + 1) % weaponOrder.length];
+      soundEngine.playPickupSound();
+      showToast(`Оружие: ${WEAPONS[next].name}`);
+      return next;
+    });
+  }, []);
 
   // Nearby 3D Context
   const [nearbyContext, setNearbyContext] = useState<{
@@ -637,77 +689,111 @@ export default function App() {
       {/* Offline State Indicator */}
       <OfflineIndicator />
 
-      {/* STRICT 3-ZONE TOP BAR CONTRACT */}
-      <header className="h-13 px-5 bg-slate-950/90 backdrop-blur-md border-b border-white/10 flex items-center justify-between z-30 shrink-0">
-        {/* Zone 1: Brand Title (Single text element) */}
-        <a
-          href="#top"
-          onClick={(e) => {
-            e.preventDefault();
-            setActiveModal('character');
-          }}
-          className="text-lg font-bold tracking-wider text-white whitespace-nowrap"
-          style={{ fontFamily: "'Chakra Petch', sans-serif" }}
-        >
-          ЭЛИЗИУМ 3D
-        </a>
+      {/* STRICT 3-ZONE TOP BAR CONTRACT (Hidden in Clean Screen mode) */}
+      {!isCleanScreen && (
+        <header className="h-12 md:h-13 px-3 md:px-5 bg-slate-950/90 backdrop-blur-md border-b border-white/10 flex items-center justify-between z-30 shrink-0">
+          {/* Zone 1: Brand Title */}
+          <div className="flex items-center gap-2">
+            <a
+              href="#top"
+              onClick={(e) => {
+                e.preventDefault();
+                setActiveModal('character');
+              }}
+              className="text-base md:text-lg font-bold tracking-wider text-white whitespace-nowrap"
+              style={{ fontFamily: "'Chakra Petch', sans-serif" }}
+            >
+              ЭЛИЗИУМ 3D
+            </a>
+            {/* Mobile Vitals Micro-Badge */}
+            <div className="md:hidden flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-slate-900 border border-white/10 text-[11px] font-mono">
+              <span className="text-emerald-400 font-bold">❤️ {hp}</span>
+              <span className="text-slate-600">·</span>
+              <span className="text-cyan-400">🔫 {ammo}</span>
+            </div>
+          </div>
 
-        {/* Zone 2: 5 Clean Text Navigation Links */}
-        <nav className="hidden md:flex items-center gap-6 text-xs font-medium text-slate-300">
-          <button
-            onClick={() => setActiveModal('character')}
-            className="hover:text-white hover:underline underline-offset-4 transition-colors whitespace-nowrap"
-          >
-            Персонажи
-          </button>
-          <button
-            onClick={() => setActiveModal('wardrobe')}
-            className="hover:text-white hover:underline underline-offset-4 transition-colors whitespace-nowrap"
-          >
-            Одежда и Защита
-          </button>
-          <button
-            onClick={() => setActiveModal('skills')}
-            className="hover:text-white hover:underline underline-offset-4 transition-colors whitespace-nowrap"
-          >
-            Навыки ({skillPoints})
-          </button>
-          <button
-            onClick={() => setActiveModal('map')}
-            className="hover:text-white hover:underline underline-offset-4 transition-colors whitespace-nowrap"
-          >
-            Карта и Транспорт
-          </button>
-          <button
-            onClick={() => setActiveModal('quests')}
-            className="hover:text-white hover:underline underline-offset-4 transition-colors whitespace-nowrap"
-          >
-            Квесты
-          </button>
-        </nav>
+          {/* Zone 2: Desktop 5 Clean Text Navigation Links */}
+          <nav className="hidden md:flex items-center gap-6 text-xs font-medium text-slate-300">
+            <button
+              onClick={() => setActiveModal('character')}
+              className="hover:text-white hover:underline underline-offset-4 transition-colors whitespace-nowrap"
+            >
+              Персонажи
+            </button>
+            <button
+              onClick={() => setActiveModal('wardrobe')}
+              className="hover:text-white hover:underline underline-offset-4 transition-colors whitespace-nowrap"
+            >
+              Одежда и Защита
+            </button>
+            <button
+              onClick={() => setActiveModal('skills')}
+              className="hover:text-white hover:underline underline-offset-4 transition-colors whitespace-nowrap"
+            >
+              Навыки ({skillPoints})
+            </button>
+            <button
+              onClick={() => setActiveModal('map')}
+              className="hover:text-white hover:underline underline-offset-4 transition-colors whitespace-nowrap"
+            >
+              Карта и Транспорт
+            </button>
+            <button
+              onClick={() => setActiveModal('quests')}
+              className="hover:text-white hover:underline underline-offset-4 transition-colors whitespace-nowrap"
+            >
+              Квесты
+            </button>
+          </nav>
 
-        {/* Zone 3: Actions + PWA Install */}
-        <div className="flex items-center gap-2">
-          <PWAInstallButton />
-          <button
-            onClick={() => setActiveModal('save')}
-            className="px-3.5 py-1.5 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-semibold transition-colors whitespace-nowrap"
-          >
-            Сохранение
-          </button>
-          <button
-            onClick={() => {
-              const nextMuted = !isMuted;
-              setIsMuted(nextMuted);
-              soundEngine.setMuted(nextMuted);
-            }}
-            className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-slate-200 transition-colors"
-            aria-label="Переключить звук"
-          >
-            {isMuted ? <VolumeX className="w-4 h-4 text-rose-400" /> : <Volume2 className="w-4 h-4 text-cyan-400" />}
-          </button>
-        </div>
-      </header>
+          {/* Zone 3: Actions + Clean Screen & Mobile Drawer */}
+          <div className="flex items-center gap-1.5 md:gap-2">
+            {/* Clean Screen Toggle Button */}
+            <button
+              onClick={() => setIsCleanScreen((s) => !s)}
+              className="p-1.5 md:px-2.5 md:py-1.5 rounded-lg bg-slate-900/90 hover:bg-slate-800 border border-cyan-400/30 text-cyan-300 text-xs font-medium flex items-center gap-1.5 transition-colors"
+              title="Убрать весь текст (Чистый экран)"
+            >
+              <EyeOff className="w-4 h-4 text-cyan-400" />
+              <span className="hidden sm:inline">Скрыть текст</span>
+            </button>
+
+            {/* Desktop Actions */}
+            <button
+              onClick={() => setActiveModal('save')}
+              className="hidden sm:inline-flex px-3.5 py-1.5 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-semibold transition-colors whitespace-nowrap"
+            >
+              Сохранение
+            </button>
+
+            <button
+              onClick={() => {
+                const nextMuted = !isMuted;
+                setIsMuted(nextMuted);
+                soundEngine.setMuted(nextMuted);
+              }}
+              className="hidden sm:inline-flex p-2 rounded-lg bg-white/10 hover:bg-white/20 text-slate-200 transition-colors"
+              aria-label="Переключить звук"
+            >
+              {isMuted ? <VolumeX className="w-4 h-4 text-rose-400" /> : <Volume2 className="w-4 h-4 text-cyan-400" />}
+            </button>
+
+            <div className="hidden sm:block">
+              <PWAInstallButton />
+            </div>
+
+            {/* Mobile Hamburger Drawer Menu Button */}
+            <button
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="md:hidden p-2 rounded-lg bg-slate-900 border border-white/20 text-slate-200 hover:text-white active:scale-95 transition-transform"
+              aria-label="Открыть мобильное меню"
+            >
+              <Menu className="w-5 h-5 text-amber-400" />
+            </button>
+          </div>
+        </header>
+      )}
 
       {/* MAIN 3D VIEWPORT CONTAINER */}
       <main className="flex-1 relative w-full h-full overflow-hidden">
@@ -739,328 +825,409 @@ export default function App() {
 
         {/* Toast Notification Banner */}
         {notificationBanner && (
-          <div className="fixed top-16 left-1/2 -translate-x-1/2 z-30 pointer-events-none px-5 py-2.5 rounded-xl bg-slate-950/90 border border-amber-400/50 text-amber-300 text-xs font-semibold shadow-xl backdrop-blur-md">
+          <div className="fixed top-14 left-1/2 -translate-x-1/2 z-30 pointer-events-none px-4 py-2 rounded-xl bg-slate-950/90 border border-amber-400/50 text-amber-300 text-xs font-semibold shadow-xl backdrop-blur-md">
             {notificationBanner}
           </div>
         )}
 
         {/* TOP-LEFT FLOATING HUD: Character Status, Environment & Camera Controls */}
-        <div className="absolute top-3 left-3 z-20 pointer-events-auto flex flex-col gap-2.5 max-w-sm">
-          {/* Character Vital Card */}
-          <div className="p-3.5 rounded-xl bg-slate-950/75 backdrop-blur-md border border-white/10 shadow-lg">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <div className="text-sm font-bold text-white leading-tight">
-                  {CHARACTERS[characterId].name}
+        {!isCleanScreen && (
+          <div className="absolute top-2 left-2 z-20 pointer-events-auto flex flex-col gap-2 max-w-[260px] sm:max-w-sm">
+            {/* Character Vital Card */}
+            <div className="p-2 sm:p-3 rounded-xl bg-slate-950/80 backdrop-blur-md border border-white/10 shadow-lg">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={() => setIsVitalsCollapsed((s) => !s)}
+                    className="p-1 rounded hover:bg-white/10 text-slate-400 hover:text-white"
+                    title={isVitalsCollapsed ? 'Развернуть показатели' : 'Свернуть показатели'}
+                  >
+                    {isVitalsCollapsed ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronUp className="w-3.5 h-3.5" />}
+                  </button>
+                  <div>
+                    <div className="text-xs sm:text-sm font-bold text-white leading-tight">
+                      {CHARACTERS[characterId].name.split(' ')[0]}
+                    </div>
+                    {!isVitalsCollapsed && (
+                      <div className="text-[10px] sm:text-[11px] text-slate-400">
+                        Ур. {level} · {OUTFITS[equippedOutfit].name}
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div className="text-[11px] text-slate-400">
-                  Ур. {level} · {OUTFITS[equippedOutfit].name}
-                </div>
-              </div>
-              <button
-                onClick={handleUseMedkit}
-                className="px-2.5 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-xs font-mono tabular-nums flex items-center gap-1 transition-colors whitespace-nowrap"
-                title="Использовать аптечку (H)"
-              >
-                <HeartPulse className="w-3.5 h-3.5" />
-                Аптечка ({medkits})
-              </button>
-            </div>
-
-            {/* Health Bar */}
-            <div className="mt-2.5">
-              <div className="flex justify-between text-[11px] font-mono tabular-nums text-slate-300 mb-1">
-                <span>Здоровье (ОЗ)</span>
-                <span>
-                  {hp} / {maxHp} · Защита от укусов: {totalBiteProtection}%
-                </span>
-              </div>
-              <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
-                <div
-                  className="h-full bg-emerald-400 transition-all duration-150"
-                  style={{ width: `${Math.min(100, (hp / Math.max(1, maxHp)) * 100)}%` }}
-                />
-              </div>
-            </div>
-
-            {/* Unboxed Metadata Telemetry Row (Zero-Pill Discipline) */}
-            <div className="mt-2.5 pt-2 border-t border-white/10 flex flex-wrap items-center gap-1.5 text-[11px] font-mono tabular-nums text-slate-300">
-              <span className="text-cyan-400">Патроны: {ammo}</span>
-              <span aria-hidden="true">·</span>
-              <span className="text-amber-400">Металл: {scrap}</span>
-              <span aria-hidden="true">·</span>
-              <span className="text-emerald-400">Био: {bioSamples}</span>
-              <span aria-hidden="true">·</span>
-              <span>Убито: {kills}</span>
-            </div>
-          </div>
-
-          {/* Dynamic Environment, Weather, Time of Day & Camera Switcher */}
-          <div className="p-3 rounded-xl bg-slate-950/75 backdrop-blur-md border border-white/10 shadow-lg space-y-2">
-            {/* Location Quick Selector */}
-            <div className="flex items-center gap-1 bg-slate-900/90 p-1 rounded-lg">
-              {(['museum', 'school', 'laboratory'] as ZoneId[]).map((zKey) => (
                 <button
-                  key={zKey}
-                  onClick={() => handleFastTravelZone(zKey, inVehicle)}
-                  className={`flex-1 py-1 px-2 rounded-md text-[11px] font-semibold transition-colors whitespace-nowrap truncate ${
-                    currentZone === zKey
-                      ? 'bg-amber-400 text-slate-950'
-                      : 'text-slate-300 hover:text-white'
-                  }`}
+                  onClick={handleUseMedkit}
+                  className="px-2 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-[11px] font-mono tabular-nums flex items-center gap-1 transition-colors whitespace-nowrap"
+                  title="Использовать аптечку (H)"
                 >
-                  {zKey === 'museum' ? 'Музей' : zKey === 'school' ? 'Школа' : 'Лаборатория'}
+                  <HeartPulse className="w-3.5 h-3.5" />
+                  <span>{medkits}</span>
                 </button>
-              ))}
+              </div>
+
+              {/* Health Bar */}
+              <div className="mt-1.5 sm:mt-2">
+                <div className="flex justify-between text-[10px] sm:text-[11px] font-mono tabular-nums text-slate-300 mb-0.5">
+                  <span>ОЗ: {hp}/{maxHp}</span>
+                  <span>Броня: {totalBiteProtection}%</span>
+                </div>
+                <div className="w-full h-1.5 sm:h-2 rounded-full bg-slate-800 overflow-hidden">
+                  <div
+                    className="h-full bg-emerald-400 transition-all duration-150"
+                    style={{ width: `${Math.min(100, (hp / Math.max(1, maxHp)) * 100)}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Telemetry Row (Shown when not collapsed) */}
+              {!isVitalsCollapsed && (
+                <div className="mt-2 pt-1.5 border-t border-white/10 flex flex-wrap items-center gap-1.5 text-[10px] sm:text-[11px] font-mono tabular-nums text-slate-300">
+                  <span className="text-cyan-400">Патроны: {ammo}</span>
+                  <span aria-hidden="true">·</span>
+                  <span className="text-amber-400">Металл: {scrap}</span>
+                  <span aria-hidden="true">·</span>
+                  <span className="text-emerald-400">Био: {bioSamples}</span>
+                  <span aria-hidden="true">·</span>
+                  <span>Убито: {kills}</span>
+                </div>
+              )}
             </div>
 
-            {/* Weather & Time of Day Controls */}
-            <div className="flex items-center justify-between gap-1.5 text-[11px]">
-              <button
-                onClick={() => {
-                  const order: WeatherType[] = ['clear', 'rain_storm', 'bio_fog', 'ash_wind'];
-                  const next = order[(order.indexOf(weather) + 1) % order.length];
-                  setWeather(next);
-                  showToast(`Погода изменилась: ${WEATHERS[next].name}`);
-                }}
-                className="flex-1 py-1.5 px-2.5 rounded-lg bg-white/5 hover:bg-white/15 text-slate-200 flex items-center justify-center gap-1.5 transition-colors whitespace-nowrap"
-              >
-                <CloudRain className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-                <span className="truncate">{WEATHERS[weather].name}</span>
-              </button>
+            {/* Dynamic Environment, Weather & Camera (Shown when not collapsed) */}
+            {!isVitalsCollapsed && (
+              <div className="p-2 sm:p-2.5 rounded-xl bg-slate-950/80 backdrop-blur-md border border-white/10 shadow-lg space-y-1.5">
+                {/* Location Quick Selector */}
+                <div className="flex items-center gap-1 bg-slate-900/90 p-1 rounded-lg">
+                  {(['museum', 'school', 'laboratory'] as ZoneId[]).map((zKey) => (
+                    <button
+                      key={zKey}
+                      onClick={() => handleFastTravelZone(zKey, inVehicle)}
+                      className={`flex-1 py-1 px-1.5 rounded-md text-[10px] sm:text-[11px] font-semibold transition-colors whitespace-nowrap truncate ${
+                        currentZone === zKey
+                          ? 'bg-amber-400 text-slate-950'
+                          : 'text-slate-300 hover:text-white'
+                      }`}
+                    >
+                      {zKey === 'museum' ? 'Музей' : zKey === 'school' ? 'Школа' : 'Лаборатория'}
+                    </button>
+                  ))}
+                </div>
 
-              <button
-                onClick={() => {
-                  const times: TimeOfDay[] = ['morning', 'day', 'sunset', 'night'];
-                  const next = times[(times.indexOf(timeOfDay) + 1) % times.length];
-                  setTimeOfDay(next);
-                }}
-                className="py-1.5 px-2.5 rounded-lg bg-white/5 hover:bg-white/15 text-slate-200 flex items-center gap-1 transition-colors whitespace-nowrap"
-              >
-                <Sun className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                <span>
-                  {timeOfDay === 'morning'
-                    ? 'Рассвет'
-                    : timeOfDay === 'day'
-                    ? 'День'
-                    : timeOfDay === 'sunset'
-                    ? 'Закат'
-                    : 'Ночь'}
-                </span>
-              </button>
+                {/* Weather, Time & Camera Controls */}
+                <div className="flex items-center justify-between gap-1 text-[10px] sm:text-[11px]">
+                  <button
+                    onClick={() => {
+                      const order: WeatherType[] = ['clear', 'rain_storm', 'bio_fog', 'ash_wind'];
+                      const next = order[(order.indexOf(weather) + 1) % order.length];
+                      setWeather(next);
+                      showToast(`Погода: ${WEATHERS[next].name}`);
+                    }}
+                    className="flex-1 py-1 px-2 rounded-lg bg-white/5 hover:bg-white/15 text-slate-200 flex items-center justify-center gap-1 transition-colors whitespace-nowrap truncate"
+                  >
+                    <CloudRain className="w-3 h-3 text-cyan-400 shrink-0" />
+                    <span className="truncate">{WEATHERS[weather].name.split(' ')[0]}</span>
+                  </button>
 
-              <button
-                onClick={() => {
-                  const modes: CameraMode[] = ['third_person', 'top_down', 'drone_cinematic'];
-                  const next = modes[(modes.indexOf(cameraMode) + 1) % modes.length];
-                  setCameraMode(next);
-                }}
-                className="py-1.5 px-2.5 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-cyan-300 flex items-center gap-1 transition-colors whitespace-nowrap"
-                title="Переключить камеру (C)"
-              >
-                <Camera className="w-3.5 h-3.5 shrink-0" />
-                <span>
-                  {cameraMode === 'third_person'
-                    ? '3-е лицо'
-                    : cameraMode === 'top_down'
-                    ? 'Сверху 3D'
-                    : '3D-Дрон'}
-                </span>
-              </button>
-            </div>
-          </div>
+                  <button
+                    onClick={() => {
+                      const times: TimeOfDay[] = ['morning', 'day', 'sunset', 'night'];
+                      const next = times[(times.indexOf(timeOfDay) + 1) % times.length];
+                      setTimeOfDay(next);
+                    }}
+                    className="py-1 px-2 rounded-lg bg-white/5 hover:bg-white/15 text-slate-200 flex items-center gap-1 transition-colors whitespace-nowrap"
+                  >
+                    <Sun className="w-3 h-3 text-amber-400 shrink-0" />
+                    <span>
+                      {timeOfDay === 'morning'
+                        ? 'Утро'
+                        : timeOfDay === 'day'
+                        ? 'День'
+                        : timeOfDay === 'sunset'
+                        ? 'Закат'
+                        : 'Ночь'}
+                    </span>
+                  </button>
 
-          {/* Contextual Prompts for Nearby NPC or Armored Vehicle */}
-          <div className="flex flex-wrap items-center gap-2">
-            {nearbyContext.nearNpcId && (
-              <button
-                onClick={() => handleOpenNpcDialogue(nearbyContext.nearNpcId!)}
-                className="px-3.5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-bold shadow-lg flex items-center gap-1.5 transition-transform active:scale-95 whitespace-nowrap"
-              >
-                <MessageCircle className="w-4 h-4" />
-                Диалог (E): {nearbyContext.nearNpcName}
-              </button>
+                  <button
+                    onClick={() => {
+                      const modes: CameraMode[] = ['third_person', 'top_down', 'drone_cinematic'];
+                      const next = modes[(modes.indexOf(cameraMode) + 1) % modes.length];
+                      setCameraMode(next);
+                    }}
+                    className="py-1 px-2 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-cyan-300 flex items-center gap-1 transition-colors whitespace-nowrap"
+                    title="Переключить камеру (C)"
+                  >
+                    <Camera className="w-3 h-3 shrink-0" />
+                    <span>
+                      {cameraMode === 'third_person'
+                        ? '3D'
+                        : cameraMode === 'top_down'
+                        ? 'Сверху'
+                        : 'Дрон'}
+                    </span>
+                  </button>
+                </div>
+              </div>
             )}
 
-            <button
-              onClick={() => handleToggleVehicle()}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold shadow-lg flex items-center gap-1.5 transition-colors whitespace-nowrap ${
-                inVehicle
-                  ? 'bg-cyan-400 text-slate-950'
-                  : 'bg-slate-900/85 hover:bg-slate-800 text-cyan-300 border border-cyan-400/40'
-              }`}
-            >
-              <Truck className="w-4 h-4" />
-              {inVehicle ? 'Выйти из Броневика (F)' : 'Сесть в Броневик (F / V)'}
-            </button>
+            {/* Contextual Prompts for Nearby NPC or Vehicle */}
+            <div className="flex flex-wrap items-center gap-1.5">
+              {nearbyContext.nearNpcId && (
+                <button
+                  onClick={() => handleOpenNpcDialogue(nearbyContext.nearNpcId!)}
+                  className="px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-bold shadow-lg flex items-center gap-1.5 transition-transform active:scale-95 whitespace-nowrap"
+                >
+                  <MessageCircle className="w-3.5 h-3.5" />
+                  {nearbyContext.nearNpcName}
+                </button>
+              )}
+
+              <button
+                onClick={() => handleToggleVehicle()}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold shadow-lg flex items-center gap-1.5 transition-colors whitespace-nowrap ${
+                  inVehicle
+                    ? 'bg-cyan-400 text-slate-950'
+                    : 'bg-slate-900/85 hover:bg-slate-800 text-cyan-300 border border-cyan-400/40'
+                }`}
+              >
+                <Truck className="w-3.5 h-3.5" />
+                {inVehicle ? 'Выйти (F)' : 'Броневик (F)'}
+              </button>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* TOP-RIGHT FLOATING HUD: Voice AI Assistant "АРИЯ" & Active Quest */}
-        <div className="absolute top-3 right-3 z-20 pointer-events-auto flex flex-col gap-2.5 max-w-xs sm:max-w-sm">
-          {/* AI Companion Voice Box */}
-          <div className="p-3.5 rounded-xl bg-slate-950/80 backdrop-blur-md border border-cyan-400/30 shadow-lg">
-            <div className="flex items-center justify-between gap-2 mb-1.5">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-cyan-300">
-                <Bot className="w-4 h-4 text-cyan-400" />
-                <span>Голосовой ИИ-Дрон «АРИЯ»</span>
-              </div>
-              <div className="flex items-center gap-1.5">
+        {!isCleanScreen && (
+          <div className="absolute top-2 right-2 z-20 pointer-events-auto flex flex-col items-end gap-2 max-w-[260px] sm:max-w-sm">
+            {/* AI Companion Voice Box (Collapsible to compact robot badge) */}
+            {isAriaCollapsed ? (
+              <div className="flex items-center gap-1.5 p-1.5 px-2.5 rounded-full bg-slate-950/85 backdrop-blur-md border border-cyan-400/40 shadow-lg max-w-[240px]">
+                <button
+                  onClick={() => setIsAriaCollapsed(false)}
+                  className="flex items-center gap-1.5 text-xs font-bold text-cyan-300 truncate"
+                  title="Развернуть советника АРИЯ"
+                >
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-400"></span>
+                  </span>
+                  <Bot className="w-4 h-4 text-cyan-400 shrink-0" />
+                  <span className="text-[11px] truncate">{aiMessage.slice(0, 24)}...</span>
+                </button>
                 <button
                   onClick={() => soundEngine.speakAssistantText(aiMessage)}
-                  className="p-1 rounded bg-white/5 hover:bg-white/15 text-slate-300"
+                  className="p-1 rounded bg-white/5 hover:bg-white/15 text-slate-300 shrink-0"
                   title="Повторить голосом"
                 >
                   <Volume2 className="w-3.5 h-3.5 text-cyan-400" />
                 </button>
                 <button
-                  onClick={() => askAIAssistant('Дай тактический совет по текущей ситуации на экране')}
-                  disabled={aiLoading}
-                  className="px-2 py-0.5 rounded bg-cyan-500/20 hover:bg-cyan-500/30 text-[11px] font-semibold text-cyan-300 transition-colors whitespace-nowrap"
+                  onClick={() => setIsAriaCollapsed(false)}
+                  className="p-1 text-slate-400 hover:text-white"
+                  title="Развернуть диалог"
                 >
-                  {aiLoading ? 'Анализ...' : 'Совет ИИ'}
+                  <ChevronDown className="w-3.5 h-3.5" />
                 </button>
               </div>
-            </div>
+            ) : (
+              <div className="p-3 rounded-xl bg-slate-950/85 backdrop-blur-md border border-cyan-400/30 shadow-lg w-full">
+                <div className="flex items-center justify-between gap-2 mb-1.5">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-cyan-300">
+                    <Bot className="w-4 h-4 text-cyan-400" />
+                    <span>ИИ «АРИЯ»</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => soundEngine.speakAssistantText(aiMessage)}
+                      className="p-1 rounded bg-white/5 hover:bg-white/15 text-slate-300"
+                      title="Повторить голосом"
+                    >
+                      <Volume2 className="w-3.5 h-3.5 text-cyan-400" />
+                    </button>
+                    <button
+                      onClick={() => askAIAssistant('Дай тактический совет по текущей ситуации на экране')}
+                      disabled={aiLoading}
+                      className="px-2 py-0.5 rounded bg-cyan-500/20 hover:bg-cyan-500/30 text-[10px] font-semibold text-cyan-300 transition-colors whitespace-nowrap"
+                    >
+                      {aiLoading ? '...' : 'Совет'}
+                    </button>
+                    <button
+                      onClick={() => setIsAriaCollapsed(true)}
+                      className="p-1 text-slate-400 hover:text-white"
+                      title="Свернуть"
+                    >
+                      <ChevronUp className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
 
-            <p className="text-xs text-slate-200 leading-relaxed">{aiMessage}</p>
+                <p className="text-xs text-slate-200 leading-relaxed max-h-20 overflow-y-auto">{aiMessage}</p>
 
-            {/* Quick Ask AI Input */}
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (!aiQuestionInput.trim()) return;
-                const q = aiQuestionInput.trim();
-                setAiQuestionInput('');
-                askAIAssistant(undefined, q);
-              }}
-              className="mt-2.5 flex items-center gap-1.5"
-            >
-              <input
-                type="text"
-                value={aiQuestionInput}
-                onChange={(e) => setAiQuestionInput(e.target.value)}
-                placeholder="Спросить совет у ИИ АРИЯ..."
-                className="flex-1 bg-slate-900/90 border border-white/15 rounded-lg px-2.5 py-1 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
-              />
+                {/* Quick Ask AI Input */}
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (!aiQuestionInput.trim()) return;
+                    const q = aiQuestionInput.trim();
+                    setAiQuestionInput('');
+                    askAIAssistant(undefined, q);
+                  }}
+                  className="mt-2 flex items-center gap-1.5"
+                >
+                  <input
+                    type="text"
+                    value={aiQuestionInput}
+                    onChange={(e) => setAiQuestionInput(e.target.value)}
+                    placeholder="Спросить у ИИ..."
+                    className="flex-1 bg-slate-900/90 border border-white/15 rounded-lg px-2 py-1 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+                  />
+                  <button
+                    type="submit"
+                    disabled={aiLoading}
+                    className="p-1 rounded-lg bg-cyan-400 hover:bg-cyan-300 text-slate-950 transition-colors"
+                    aria-label="Спросить ИИ"
+                  >
+                    <Send className="w-3.5 h-3.5" />
+                  </button>
+                </form>
+              </div>
+            )}
+
+            {/* Active Quest Tracker Card (Collapsible) */}
+            {activeQuest && (
+              isQuestCollapsed ? (
+                <div
+                  onClick={() => setIsQuestCollapsed(false)}
+                  className="p-1.5 px-2.5 rounded-full bg-slate-950/85 backdrop-blur-md border border-amber-400/40 text-amber-300 text-xs font-medium flex items-center gap-1.5 cursor-pointer shadow-md"
+                  title="Развернуть квест"
+                >
+                  <span className="font-bold truncate max-w-[130px]">🎯 {activeQuest.title}:</span>
+                  <span className="font-mono text-[11px]">{activeQuest.currentCount}/{activeQuest.targetCount}</span>
+                  <ChevronDown className="w-3 h-3 text-amber-400 shrink-0" />
+                </div>
+              ) : (
+                <div className="p-2.5 sm:p-3 rounded-xl bg-slate-950/80 backdrop-blur-md border border-white/10 hover:border-amber-400/40 transition-colors w-full">
+                  <div className="flex items-center justify-between text-[11px] text-amber-400 font-semibold">
+                    <span className="truncate">{activeQuest.title}</span>
+                    <div className="flex items-center gap-1.5 shrink-0 ml-1">
+                      <span className="font-mono tabular-nums">{activeQuest.currentCount}/{activeQuest.targetCount}</span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsQuestCollapsed(true);
+                        }}
+                        className="p-0.5 text-slate-400 hover:text-white"
+                        title="Свернуть квест"
+                      >
+                        <ChevronUp className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
+                  <p
+                    onClick={() => setActiveModal('quests')}
+                    className="text-xs text-slate-300 mt-1 line-clamp-2 cursor-pointer"
+                  >
+                    {activeQuest.description}
+                  </p>
+                </div>
+              )
+            )}
+          </div>
+        )}
+
+        {/* BOTTOM WEAPON & THROWABLE OBJECTS HOTBAR (Hidden in Clean Screen mode) */}
+        {!isCleanScreen && (
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 pointer-events-auto flex flex-col items-center gap-1.5 max-w-full px-2">
+            <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-slate-950/85 backdrop-blur-md border border-white/15 shadow-2xl overflow-x-auto max-w-[96vw]">
+              {(
+                [
+                  'pulse_pistol',
+                  'plasma_shotgun',
+                  'cryo_rifle',
+                  'throw_extinguisher',
+                  'throw_bio_flask',
+                  'throw_globe_disc',
+                ] as WeaponId[]
+              ).map((wId, idx) => {
+                const w = WEAPONS[wId];
+                const isSelected = selectedWeapon === wId;
+                return (
+                  <button
+                    key={wId}
+                    onClick={() => setSelectedWeapon(wId)}
+                    className={`px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl text-left transition-all shrink-0 border ${
+                      isSelected
+                        ? 'bg-amber-400 text-slate-950 border-amber-300 font-bold'
+                        : 'bg-slate-900/80 text-slate-200 border-white/5 hover:bg-white/10'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-1.5 text-[9px] sm:text-[10px] font-mono">
+                      <span>[{idx + 1}]</span>
+                      <span className={isSelected ? 'text-slate-900' : 'text-slate-400'}>
+                        {w.category === 'firearm' ? 'Оружие' : 'Бросок'}
+                      </span>
+                    </div>
+                    <div className="text-[11px] sm:text-xs whitespace-nowrap mt-0.5">
+                      {w.name.split(' ')[0]} {w.name.split(' ')[1]}
+                    </div>
+                  </button>
+                );
+              })}
+
+              {/* Elemental Burst (Q) Button */}
               <button
-                type="submit"
-                disabled={aiLoading}
-                className="p-1.5 rounded-lg bg-cyan-400 hover:bg-cyan-300 text-slate-950 transition-colors"
-                aria-label="Спросить ИИ"
+                onClick={() => {
+                  mobileActionsRef.current.burst = true;
+                }}
+                className="px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/50 text-cyan-300 shrink-0 flex flex-col items-center justify-center transition-colors"
+                title="Элементальный взрыв (Клавиша Q)"
               >
-                <Send className="w-3.5 h-3.5" />
+                <div className="flex items-center gap-1 text-[9px] sm:text-[10px] font-mono">
+                  <Sparkles className="w-3 h-3 text-amber-400" />
+                  <span>[Q] Ульта</span>
+                </div>
+                <div className="text-[11px] sm:text-xs font-bold whitespace-nowrap mt-0.5">
+                  {nearbyContext.burstCooldown > 0
+                    ? `${nearbyContext.burstCooldown}с`
+                    : 'Готово'}
+                </div>
               </button>
-            </form>
-          </div>
 
-          {/* Active Quest Tracker Card */}
-          {activeQuest && (
-            <div
-              onClick={() => setActiveModal('quests')}
-              className="p-3 rounded-xl bg-slate-950/75 backdrop-blur-md border border-white/10 hover:border-amber-400/40 cursor-pointer transition-colors"
-            >
-              <div className="flex items-center justify-between text-[11px] text-amber-400 font-semibold">
-                <span className="truncate">{activeQuest.title}</span>
-                <span className="font-mono tabular-nums shrink-0 ml-2">
-                  {activeQuest.currentCount}/{activeQuest.targetCount}
-                </span>
+              {/* Mobile Touch Controls Toggle */}
+              <button
+                onClick={() => setShowMobileControls((s) => !s)}
+                className={`p-2 sm:p-2.5 rounded-xl border transition-colors shrink-0 ${
+                  showMobileControls
+                    ? 'bg-amber-400 text-slate-950 border-amber-300'
+                    : 'bg-slate-900/80 text-slate-300 border-white/10 hover:text-white'
+                }`}
+                title="Включить/скрыть мобильный джойстик на экране"
+              >
+                <Smartphone className="w-4 h-4" />
+              </button>
+
+              {/* Mobile PWA Install Shortcut */}
+              <div className="md:hidden shrink-0">
+                <PWAInstallButton compact />
               </div>
-              <p className="text-xs text-slate-300 mt-1 line-clamp-2">{activeQuest.description}</p>
             </div>
-          )}
-        </div>
 
-        {/* BOTTOM WEAPON & THROWABLE OBJECTS HOTBAR */}
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 pointer-events-auto flex flex-col items-center gap-1.5 max-w-full px-2">
-          <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-slate-950/85 backdrop-blur-md border border-white/15 shadow-2xl overflow-x-auto max-w-[96vw]">
-            {(
-              [
-                'pulse_pistol',
-                'plasma_shotgun',
-                'cryo_rifle',
-                'throw_extinguisher',
-                'throw_bio_flask',
-                'throw_globe_disc',
-              ] as WeaponId[]
-            ).map((wId, idx) => {
-              const w = WEAPONS[wId];
-              const isSelected = selectedWeapon === wId;
-              return (
-                <button
-                  key={wId}
-                  onClick={() => setSelectedWeapon(wId)}
-                  className={`px-3 py-2 rounded-xl text-left transition-all shrink-0 border ${
-                    isSelected
-                      ? 'bg-amber-400 text-slate-950 border-amber-300 font-bold'
-                      : 'bg-slate-900/80 text-slate-200 border-white/5 hover:bg-white/10'
-                  }`}
-                >
-                  <div className="flex items-center justify-between gap-2 text-[10px] font-mono">
-                    <span>[{idx + 1}]</span>
-                    <span className={isSelected ? 'text-slate-900' : 'text-slate-400'}>
-                      {w.category === 'firearm' ? 'Оружие' : 'Предмет'}
-                    </span>
-                  </div>
-                  <div className="text-xs whitespace-nowrap mt-0.5">
-                    {w.name.split(' ')[0]} {w.name.split(' ')[1]}
-                  </div>
-                </button>
-              );
-            })}
-
-            {/* Elemental Burst (Q) Button */}
-            <button
-              onClick={() => {
-                mobileActionsRef.current.burst = true;
-              }}
-              className="px-3 py-2 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/50 text-cyan-300 shrink-0 flex flex-col items-center justify-center transition-colors"
-              title="Элементальный взрыв (Клавиша Q)"
-            >
-              <div className="flex items-center gap-1 text-[10px] font-mono">
-                <Sparkles className="w-3 h-3 text-amber-400" />
-                <span>[Q] Ульта</span>
-              </div>
-              <div className="text-xs font-bold whitespace-nowrap mt-0.5">
-                {nearbyContext.burstCooldown > 0
-                  ? `КД ${nearbyContext.burstCooldown}с`
-                  : 'Готово'}
-              </div>
-            </button>
-
-            {/* Mobile Touch Controls Toggle */}
-            <button
-              onClick={() => setShowMobileControls((s) => !s)}
-              className={`p-2.5 rounded-xl border transition-colors shrink-0 ${
-                showMobileControls
-                  ? 'bg-amber-400 text-slate-950 border-amber-300'
-                  : 'bg-slate-900/80 text-slate-300 border-white/10 hover:text-white'
-              }`}
-              title="Включить/скрыть мобильный джойстик на экране"
-            >
-              <Smartphone className="w-4 h-4" />
-            </button>
-
-            {/* Mobile PWA Install Shortcut */}
-            <div className="md:hidden shrink-0">
-              <PWAInstallButton compact />
+            <div className="hidden sm:flex items-center gap-2 text-[11px] text-slate-400 bg-slate-950/70 px-3 py-1 rounded-lg backdrop-blur-sm">
+              <span>WASD — Движение</span>
+              <span aria-hidden="true">·</span>
+              <span>ЛКМ / Пробел — Огонь</span>
+              <span aria-hidden="true">·</span>
+              <span>G — Бросок</span>
+              <span aria-hidden="true">·</span>
+              <span>Q — Ульта</span>
+              <span aria-hidden="true">·</span>
+              <span>F — Транспорт</span>
+              <span aria-hidden="true">·</span>
+              <span>E — Диалог</span>
             </div>
           </div>
-
-          <div className="hidden sm:flex items-center gap-2 text-[11px] text-slate-400 bg-slate-950/70 px-3 py-1 rounded-lg backdrop-blur-sm">
-            <span>WASD — Движение</span>
-            <span aria-hidden="true">·</span>
-            <span>ЛКМ / Пробел — Стрельба</span>
-            <span aria-hidden="true">·</span>
-            <span>G — Бросок предмета</span>
-            <span aria-hidden="true">·</span>
-            <span>Q — Ульта</span>
-            <span aria-hidden="true">·</span>
-            <span>F — Транспорт</span>
-            <span aria-hidden="true">·</span>
-            <span>E — Диалог с выжившим</span>
-          </div>
-        </div>
+        )}
 
         {/* MOBILE TOUCH JOYSTICK & ERGONOMIC BUTTONS */}
         <MobileTouchHUD
@@ -1071,14 +1238,36 @@ export default function App() {
           nearVehicle={nearbyContext.nearVehicle}
           inVehicle={inVehicle}
           burstCooldown={nearbyContext.burstCooldown}
+          isCleanScreen={isCleanScreen}
+          onToggleCleanScreen={() => setIsCleanScreen((s) => !s)}
           onInteractNPC={() => {
             if (nearbyContext.nearNpcId) {
               handleOpenNpcDialogue(nearbyContext.nearNpcId);
             }
           }}
           onToggleVehicle={() => handleToggleVehicle()}
+          currentWeaponName={WEAPONS[selectedWeapon].name.split(' ')[0]}
+          onCycleWeapon={handleCycleWeapon}
+          medkits={medkits}
+          onUseMedkit={handleUseMedkit}
         />
       </main>
+
+      {/* MOBILE NAVIGATION DRAWER */}
+      <MobileNavDrawer
+        isOpen={isMobileMenuOpen}
+        onClose={() => setIsMobileMenuOpen(false)}
+        onOpenModal={(modal) => setActiveModal(modal)}
+        skillPoints={skillPoints}
+        isCleanScreen={isCleanScreen}
+        onToggleCleanScreen={() => setIsCleanScreen((s) => !s)}
+        isMuted={isMuted}
+        onToggleMute={() => {
+          const nextMuted = !isMuted;
+          setIsMuted(nextMuted);
+          soundEngine.setMuted(nextMuted);
+        }}
+      />
 
       {/* VISUAL NOVEL BRANCHING DIALOGUE MODAL */}
       {activeDialogueNpc && (
