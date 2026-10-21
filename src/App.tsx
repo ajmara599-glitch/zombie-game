@@ -44,6 +44,7 @@ import { ActiveModalType, GameModals } from './components/GameModals';
 import { VisualNovelModal } from './components/VisualNovelModal';
 import { MobileTouchHUD } from './components/MobileTouchHUD';
 import { soundEngine } from './audio/SoundEngine';
+import { PWAInstallButton, OfflineIndicator } from './components/PWAInstallButton';
 
 const SAVE_STORAGE_KEY = 'elysium_zombie_3d_saves_v1';
 
@@ -633,6 +634,9 @@ export default function App() {
 
   return (
     <div className="w-screen h-screen relative overflow-hidden bg-slate-950 select-none flex flex-col">
+      {/* Offline State Indicator */}
+      <OfflineIndicator />
+
       {/* STRICT 3-ZONE TOP BAR CONTRACT */}
       <header className="h-13 px-5 bg-slate-950/90 backdrop-blur-md border-b border-white/10 flex items-center justify-between z-30 shrink-0">
         {/* Zone 1: Brand Title (Single text element) */}
@@ -682,8 +686,9 @@ export default function App() {
           </button>
         </nav>
 
-        {/* Zone 3: 2 Primary Actions */}
-        <div className="flex items-center gap-2.5">
+        {/* Zone 3: Actions + PWA Install */}
+        <div className="flex items-center gap-2">
+          <PWAInstallButton />
           <button
             onClick={() => setActiveModal('save')}
             className="px-3.5 py-1.5 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-semibold transition-colors whitespace-nowrap"
@@ -1035,6 +1040,11 @@ export default function App() {
             >
               <Smartphone className="w-4 h-4" />
             </button>
+
+            {/* Mobile PWA Install Shortcut */}
+            <div className="md:hidden shrink-0">
+              <PWAInstallButton compact />
+            </div>
           </div>
 
           <div className="hidden sm:flex items-center gap-2 text-[11px] text-slate-400 bg-slate-950/70 px-3 py-1 rounded-lg backdrop-blur-sm">

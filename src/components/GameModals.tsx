@@ -12,6 +12,7 @@ import {
   Sparkles,
   Upload,
 } from 'lucide-react';
+import { PWAInstallButton } from './PWAInstallButton';
 import {
   CharacterId,
   OutfitId,
@@ -524,6 +525,27 @@ export const GameModals: React.FC<GameModalsProps> = ({
               <p className="text-sm text-slate-300">
                 Сохраняйте прогресс в браузере в любой из 3 слотов. Сохраняются выбранный герой, одежда, навыки, ресурсы, локация и сюжетные решения.
               </p>
+
+              {/* PWA Mobile App Install Card */}
+              <div className="p-4 rounded-xl bg-gradient-to-r from-cyan-950/60 to-slate-900 border border-cyan-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl overflow-hidden border border-cyan-400/40 bg-slate-950 shrink-0">
+                    <img src="/pwa-192x192.png" alt="App Icon" className="w-full h-full object-cover" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-white font-display">
+                      Установить как мобильное приложение (PWA)
+                    </div>
+                    <div className="text-[11px] text-slate-400">
+                      Запуск без рамок браузера, иконка на рабочем столе и поддержка оффлайн-режима.
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 self-end sm:self-auto">
+                  <PWAInstallButton />
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {[0, 1, 2].map((slotIdx) => {
                   const slotData = saveSlots[slotIdx];
