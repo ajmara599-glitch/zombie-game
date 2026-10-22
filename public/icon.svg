@@ -1,223 +1,186 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
-    <!-- Background Gradients -->
-    <radialGradient id="bgGlow" cx="50%" cy="40%" r="65%">
-      <stop offset="0%" stop-color="#1e1b4b" />
-      <stop offset="45%" stop-color="#0f172a" />
-      <stop offset="100%" stop-color="#020617" />
-    </radialGradient>
-    <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.8" />
-      <stop offset="50%" stop-color="#3b82f6" stop-opacity="0.3" />
-      <stop offset="100%" stop-color="#000000" stop-opacity="0" />
-    </radialGradient>
-    <radialGradient id="dangerGlow" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#f43f5e" stop-opacity="0.7" />
-      <stop offset="70%" stop-color="#be123c" stop-opacity="0.2" />
-      <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+    <!-- Background Night Sky -->
+    <radialGradient id="nightSky" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#1f2c42" />
+      <stop offset="55%" stop-color="#111827" />
+      <stop offset="100%" stop-color="#070a10" />
     </radialGradient>
 
-    <!-- Metallic Edge Gradients -->
-    <linearGradient id="shieldBorder" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#38bdf8" />
-      <stop offset="35%" stop-color="#818cf8" />
-      <stop offset="70%" stop-color="#ec4899" />
-      <stop offset="100%" stop-color="#06b6d4" />
+    <!-- Wood Plank Gradient -->
+    <linearGradient id="woodPlank" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#8d4925" />
+      <stop offset="25%" stop-color="#6f3517" />
+      <stop offset="65%" stop-color="#55260e" />
+      <stop offset="100%" stop-color="#3b1706" />
     </linearGradient>
 
-    <linearGradient id="bladeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#e0f2fe" />
-      <stop offset="40%" stop-color="#38bdf8" />
-      <stop offset="80%" stop-color="#0284c7" />
-      <stop offset="100%" stop-color="#0369a1" />
+    <!-- Wood Trim -->
+    <linearGradient id="woodBevel" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#b46332" />
+      <stop offset="50%" stop-color="#733716" />
+      <stop offset="100%" stop-color="#2a0f03" />
     </linearGradient>
 
-    <linearGradient id="bladeEdge" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#ffffff" />
-      <stop offset="50%" stop-color="#bae6fd" />
-      <stop offset="100%" stop-color="#38bdf8" />
+    <!-- Text 3D Gradient -->
+    <linearGradient id="tdiGold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fff176" />
+      <stop offset="35%" stop-color="#ffb300" />
+      <stop offset="80%" stop-color="#f57c00" />
+      <stop offset="100%" stop-color="#d84315" />
     </linearGradient>
 
-    <linearGradient id="goldElysium" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#fef08a" />
-      <stop offset="40%" stop-color="#f59e0b" />
-      <stop offset="85%" stop-color="#b45309" />
-      <stop offset="100%" stop-color="#78350f" />
-    </linearGradient>
+    <!-- Fire Gradients -->
+    <radialGradient id="fireGlow" cx="50%" cy="80%" r="60%">
+      <stop offset="0%" stop-color="#fff59d" />
+      <stop offset="30%" stop-color="#ffb74d" />
+      <stop offset="60%" stop-color="#ff5722" />
+      <stop offset="100%" stop-color="#d50000" stop-opacity="0" />
+    </radialGradient>
 
-    <!-- Filter Shadows -->
-    <filter id="neonCyan" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="8" result="blur" />
-      <feMerge>
-        <feMergeNode in="blur" />
-        <feMergeNode in="blur" />
-        <feMergeNode in="SourceGraphic" />
-      </feMerge>
+    <filter id="comicDrop" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="3" dy="5" stdDeviation="3" flood-color="#000000" flood-opacity="0.8" />
     </filter>
-
-    <filter id="neonCrimson" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="6" result="blur" />
-      <feMerge>
-        <feMergeNode in="blur" />
-        <feMergeNode in="SourceGraphic" />
-      </feMerge>
-    </filter>
-
-    <!-- Clip Path for Rounded Squircle Icon -->
-    <clipPath id="squircle">
-      <rect x="0" y="0" width="512" height="512" rx="115" ry="115" />
-    </clipPath>
   </defs>
 
-  <g clip-path="url(#squircle)">
-    <!-- Main Background -->
-    <rect width="512" height="512" fill="url(#bgGlow)" />
+  <!-- Base Icon Canvas -->
+  <rect width="512" height="512" rx="108" fill="url(#nightSky)" />
 
-    <!-- Cyber Grid Backdrop -->
-    <g stroke="#1e293b" stroke-width="1.5" opacity="0.35">
-      <line x1="64" y1="0" x2="64" y2="512" />
-      <line x1="128" y1="0" x2="128" y2="512" />
-      <line x1="192" y1="0" x2="192" y2="512" />
-      <line x1="256" y1="0" x2="256" y2="512" />
-      <line x1="320" y1="0" x2="320" y2="512" />
-      <line x1="384" y1="0" x2="384" y2="512" />
-      <line x1="448" y1="0" x2="448" y2="512" />
-      <line x1="0" y1="64" x2="512" y2="64" />
-      <line x1="0" y1="128" x2="512" y2="128" />
-      <line x1="0" y1="192" x2="512" y2="192" />
-      <line x1="0" y1="256" x2="512" y2="256" />
-      <line x1="0" y1="320" x2="512" y2="320" />
-      <line x1="0" y1="384" x2="512" y2="384" />
-      <line x1="0" y1="448" x2="512" y2="448" />
-    </g>
+  <!-- Moon glow in background -->
+  <circle cx="256" cy="190" r="140" fill="#fff9c4" opacity="0.12" />
+  <circle cx="256" cy="190" r="95" fill="#fffde7" opacity="0.22" />
 
-    <!-- Radial Glow Center -->
-    <circle cx="256" cy="240" r="220" fill="url(#coreGlow)" />
-    <circle cx="256" cy="270" r="140" fill="url(#dangerGlow)" />
+  <!-- Silhouette pine trees -->
+  <polygon points="50,380 90,260 130,380" fill="#0c131d" />
+  <polygon points="70,390 120,290 170,390" fill="#0e1724" />
+  <polygon points="340,390 390,280 440,390" fill="#0e1724" />
+  <polygon points="380,380 420,260 460,380" fill="#0c131d" />
 
-    <!-- Hexagonal Tech Shield Frame -->
-    <polygon points="256,42 430,126 430,366 256,450 82,366 82,126" 
-      fill="#090d16" fill-opacity="0.85" 
-      stroke="url(#shieldBorder)" stroke-width="6" 
-      stroke-linejoin="round" />
+  <!-- Sign Post Stakes -->
+  <path d="M125 120 L145 120 L140 430 L120 430 Z" fill="#3e1d0c" stroke="#120702" stroke-width="5" />
+  <path d="M370 120 L390 120 L385 430 L365 430 Z" fill="#3e1d0c" stroke="#120702" stroke-width="5" />
 
-    <!-- Inner Shield Inset Border -->
-    <polygon points="256,62 410,136 410,350 256,428 102,350 102,136" 
-      fill="none" 
-      stroke="#0ea5e9" stroke-width="2" stroke-opacity="0.4"
-      stroke-dasharray="16, 8" />
+  <!-- Main Wooden Camp Signboard -->
+  <g filter="url(#comicDrop)">
+    <!-- Outer board contour -->
+    <path d="M 45 150 
+             Q 40 180, 48 220 
+             Q 42 270, 50 310
+             L 462 310
+             Q 470 260, 464 220
+             Q 472 170, 460 150
+             L 256 142 Z" 
+          fill="url(#woodPlank)" 
+          stroke="#1a0903" 
+          stroke-width="12" 
+          stroke-linejoin="round" />
 
-    <!-- Biohazard Symbol Behind Weapon -->
-    <g transform="translate(256, 230)" opacity="0.32" stroke="#f43f5e" stroke-width="4" fill="none">
-      <circle r="92" stroke-dasharray="24, 12" />
-      <circle r="70" />
-      <circle r="36" fill="#f43f5e" fill-opacity="0.15" />
-      <!-- Biohazard lobes -->
-      <circle cx="0" cy="-42" r="38" />
-      <circle cx="-36" cy="21" r="38" />
-      <circle cx="36" cy="21" r="38" />
-    </g>
+    <!-- Wood grain lines -->
+    <path d="M 70 180 Q 200 175 440 182" stroke="#4a1e08" stroke-width="4" fill="none" opacity="0.7" />
+    <path d="M 60 230 Q 260 235 450 228" stroke="#3b1504" stroke-width="5" fill="none" opacity="0.8" />
+    <path d="M 75 275 Q 240 270 435 278" stroke="#4a1e08" stroke-width="4" fill="none" opacity="0.7" />
 
-    <!-- Crossed Cyber Katana & Energy Rifle -->
-    <!-- Blade 1 (Diagonal Left-Right) -->
-    <g transform="rotate(45, 256, 236)" filter="url(#neonCyan)">
-      <!-- Blade Body -->
-      <polygon points="256,70 263,90 261,370 251,370 249,90" fill="url(#bladeGrad)" />
-      <!-- High-tech edge shine -->
-      <line x1="256" y1="72" x2="256" y2="368" stroke="url(#bladeEdge)" stroke-width="3" />
-      <!-- Guard / Tsuba -->
-      <rect x="236" y="368" width="40" height="8" rx="3" fill="#38bdf8" stroke="#ffffff" stroke-width="1.5" />
-      <!-- Handle / Tsuka -->
-      <rect x="250" y="376" width="12" height="60" rx="3" fill="#0f172a" stroke="#0284c7" stroke-width="2" />
-      <!-- Cyber Wrap marks -->
-      <line x1="250" y1="388" x2="262" y2="388" stroke="#38bdf8" stroke-width="2" />
-      <line x1="250" y1="402" x2="262" y2="402" stroke="#38bdf8" stroke-width="2" />
-      <line x1="250" y1="416" x2="262" y2="416" stroke="#38bdf8" stroke-width="2" />
-      <!-- Pommel -->
-      <circle cx="256" cy="440" r="7" fill="#38bdf8" stroke="#ffffff" stroke-width="1" />
-    </g>
+    <!-- Signboard bolts / rivets -->
+    <circle cx="135" cy="170" r="7" fill="#8d99ae" stroke="#2b2d42" stroke-width="3" />
+    <circle cx="135" cy="285" r="7" fill="#8d99ae" stroke="#2b2d42" stroke-width="3" />
+    <circle cx="378" cy="170" r="7" fill="#8d99ae" stroke="#2b2d42" stroke-width="3" />
+    <circle cx="378" cy="285" r="7" fill="#8d99ae" stroke="#2b2d42" stroke-width="3" />
 
-    <!-- Blade 2 (Diagonal Right-Left) -->
-    <g transform="rotate(-45, 256, 236)" filter="url(#neonCyan)">
-      <!-- Blade Body -->
-      <polygon points="256,70 263,90 261,370 251,370 249,90" fill="url(#bladeGrad)" />
-      <line x1="256" y1="72" x2="256" y2="368" stroke="url(#bladeEdge)" stroke-width="3" />
-      <!-- Guard -->
-      <rect x="236" y="368" width="40" height="8" rx="3" fill="#38bdf8" stroke="#ffffff" stroke-width="1.5" />
-      <!-- Handle -->
-      <rect x="250" y="376" width="12" height="60" rx="3" fill="#0f172a" stroke="#0284c7" stroke-width="2" />
-      <line x1="250" y1="388" x2="262" y2="388" stroke="#38bdf8" stroke-width="2" />
-      <line x1="250" y1="402" x2="262" y2="402" stroke="#38bdf8" stroke-width="2" />
-      <line x1="250" y1="416" x2="262" y2="416" stroke="#38bdf8" stroke-width="2" />
-      <circle cx="256" cy="440" r="7" fill="#38bdf8" stroke="#ffffff" stroke-width="1" />
-    </g>
+    <!-- "TOTAL" text banner badge -->
+    <rect x="180" y="152" width="152" height="32" rx="6" fill="#c0392b" stroke="#110502" stroke-width="5" />
+    <text x="256" y="174" 
+          font-family="'Impact', 'Arial Black', sans-serif" 
+          font-size="20" 
+          font-weight="900" 
+          letter-spacing="4" 
+          text-anchor="middle" 
+          fill="#ffffff" 
+          stroke="#000000" 
+          stroke-width="2">TOTAL</text>
 
-    <!-- Stylized Cyber Skull / Zombie Apocalypse Crest -->
-    <g transform="translate(256, 226)">
-      <!-- Skull Cranium -->
-      <path d="M -54,-24 C -54,-64 -32,-84 0,-84 C 32,-84 54,-64 54,-24 C 54,-4 44,14 34,22 L 32,46 C 32,50 28,54 24,54 L -24,54 C -28,54 -32,50 -32,46 L -34,22 C -44,14 -54,-4 -54,-24 Z" 
-        fill="#090d16" stroke="#38bdf8" stroke-width="4.5" />
-      
-      <!-- Tech Cheek Cutouts -->
-      <path d="M -44,6 L -28,10 L -30,28 Z" fill="#0284c7" opacity="0.6" />
-      <path d="M 44,6 L 28,10 L 30,28 Z" fill="#0284c7" opacity="0.6" />
+    <!-- "DRAMA" text in signature TDI bold comic block -->
+    <text x="256" y="235" 
+          font-family="'Impact', 'Arial Black', sans-serif" 
+          font-size="58" 
+          font-weight="900" 
+          letter-spacing="5" 
+          text-anchor="middle" 
+          fill="url(#tdiGold)" 
+          stroke="#000000" 
+          stroke-width="11" 
+          paint-order="stroke fill">DRAMA</text>
 
-      <!-- Left Eye - Cyber Optic (Cyan Target Reticle) -->
-      <circle cx="-20" cy="-14" r="14" fill="#042f2e" stroke="#14b8a6" stroke-width="3" />
-      <circle cx="-20" cy="-14" r="6" fill="#2dd4bf" filter="url(#neonCyan)" />
-      <line x1="-28" y1="-14" x2="-12" y2="-14" stroke="#5eead4" stroke-width="2" />
-      <line x1="-20" y1="-22" x2="-20" y2="-6" stroke="#5eead4" stroke-width="2" />
+    <!-- "ISLAND" text -->
+    <text x="256" y="295" 
+          font-family="'Impact', 'Arial Black', sans-serif" 
+          font-size="46" 
+          font-weight="900" 
+          letter-spacing="6" 
+          text-anchor="middle" 
+          fill="#ffea00" 
+          stroke="#000000" 
+          stroke-width="9" 
+          paint-order="stroke fill">ISLAND</text>
+  </g>
 
-      <!-- Right Eye - Infected / Rogue Eye (Crimson Glow) -->
-      <polygon points="12,-20 28,-22 32,-8 18,-6" fill="#450a0a" stroke="#f43f5e" stroke-width="3" />
-      <circle cx="22" cy="-13" r="5" fill="#ef4444" filter="url(#neonCrimson)" />
+  <!-- Campfire at bottom -->
+  <g transform="translate(0, 10)">
+    <!-- Campfire Stones -->
+    <ellipse cx="256" cy="455" rx="140" ry="26" fill="#181310" stroke="#000000" stroke-width="6" />
+    <ellipse cx="170" cy="455" rx="25" ry="15" fill="#4a5568" stroke="#1a202c" stroke-width="4" />
+    <ellipse cx="215" cy="465" rx="30" ry="18" fill="#718096" stroke="#2d3748" stroke-width="4" />
+    <ellipse cx="265" cy="466" rx="32" ry="19" fill="#4a5568" stroke="#1a202c" stroke-width="4" />
+    <ellipse cx="315" cy="462" rx="28" ry="16" fill="#718096" stroke="#2d3748" stroke-width="4" />
+    <ellipse cx="350" cy="454" rx="22" ry="14" fill="#4a5568" stroke="#1a202c" stroke-width="4" />
 
-      <!-- Nasal Tech Vent -->
-      <polygon points="0,-2 -7,10 7,10" fill="#38bdf8" opacity="0.85" />
+    <!-- Burning Logs -->
+    <line x1="180" y1="460" x2="330" y2="420" stroke="#5d4037" stroke-width="18" stroke-linecap="round" />
+    <line x1="180" y1="460" x2="330" y2="420" stroke="#27150d" stroke-width="18" stroke-dasharray="10 25" stroke-linecap="round" />
+    <line x1="330" y1="460" x2="180" y2="420" stroke="#4e342e" stroke-width="18" stroke-linecap="round" />
 
-      <!-- Jaw / Teeth Grill Plates -->
-      <rect x="-20" y="28" width="8" height="18" rx="2" fill="#e2e8f0" stroke="#090d16" stroke-width="1.5" />
-      <rect x="-9" y="28" width="8" height="20" rx="2" fill="#e2e8f0" stroke="#090d16" stroke-width="1.5" />
-      <rect x="1" y="28" width="8" height="20" rx="2" fill="#e2e8f0" stroke="#090d16" stroke-width="1.5" />
-      <rect x="12" y="28" width="8" height="18" rx="2" fill="#e2e8f0" stroke="#090d16" stroke-width="1.5" />
-      <line x1="-22" y1="38" x2="22" y2="38" stroke="#090d16" stroke-width="2" />
+    <!-- Flames Glow -->
+    <circle cx="256" cy="390" r="75" fill="url(#fireGlow)" />
 
-      <!-- Forehead Crest Symbol - Golden Stylized "E" -->
-      <path d="M -16,-62 L 16,-62 L 16,-52 L -6,-52 L -6,-44 L 12,-44 L 12,-36 L -6,-36 L -6,-26 L 16,-26 L 16,-16 L -16,-16 Z" 
-        fill="url(#goldElysium)" stroke="#fef08a" stroke-width="1.2" />
-    </g>
+    <!-- Stylized TDI Flames -->
+    <!-- Red outer flame -->
+    <path d="M 200 440 
+             Q 180 370 215 340 
+             Q 230 380 240 330 
+             Q 260 280 270 335 
+             Q 290 355 315 350 
+             Q 300 400 312 440 Z" 
+          fill="#ff3d00" 
+          stroke="#000000" 
+          stroke-width="6" 
+          stroke-linejoin="round" />
 
-    <!-- Top Badge "3D RPG" -->
-    <g transform="translate(256, 88)">
-      <rect x="-64" y="-14" width="128" height="28" rx="14" fill="#020617" stroke="#38bdf8" stroke-width="2" />
-      <text x="0" y="5" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-weight="900" font-size="14" letter-spacing="3" fill="#38bdf8">
-        3D ACTION
-      </text>
-    </g>
+    <!-- Orange mid flame -->
+    <path d="M 215 440 
+             Q 200 385 230 360 
+             Q 245 390 255 345 
+             Q 275 325 278 365 
+             Q 295 385 295 440 Z" 
+          fill="#ff9100" 
+          stroke="#000000" 
+          stroke-width="5" />
 
-    <!-- Bottom Typography "ELYSIUM / ЭЛИЗИУМ" -->
-    <g transform="translate(256, 420)">
-      <!-- Glow Underlay -->
-      <text x="0" y="0" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-weight="900" font-size="34" letter-spacing="7" fill="#06b6d4" filter="url(#neonCyan)" opacity="0.9">
-        ЭЛИЗИУМ
-      </text>
-      <!-- Crisp Foreground Text -->
-      <text x="0" y="0" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-weight="900" font-size="34" letter-spacing="7" fill="#ffffff">
-        ЭЛИЗИУМ
-      </text>
-      <text x="0" y="20" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-weight="700" font-size="12" letter-spacing="5" fill="#f59e0b">
-        ZOMBIE APOCALYPSE
-      </text>
-    </g>
+    <!-- Yellow core flame -->
+    <path d="M 230 440 
+             Q 220 400 245 380 
+             Q 256 365 265 390 
+             Q 280 405 278 440 Z" 
+          fill="#ffea00" />
+  </g>
 
-    <!-- Top Gloss Highlight Reflection -->
-    <path d="M 0,0 L 512,0 C 512,140 380,180 256,180 C 132,180 0,140 0,0 Z" 
-      fill="#ffffff" fill-opacity="0.04" />
-
-    <!-- Corner Accents -->
-    <path d="M 36,90 L 36,36 L 90,36" stroke="#38bdf8" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.6" />
-    <path d="M 476,90 L 476,36 L 422,36" stroke="#38bdf8" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.6" />
-    <path d="M 36,422 L 36,476 L 90,476" stroke="#38bdf8" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.6" />
-    <path d="M 476,422 L 476,476 L 422,476" stroke="#38bdf8" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.6" />
+  <!-- Marshmallow on stick crossing the screen -->
+  <g transform="rotate(-28 110 330)">
+    <!-- Skewer stick -->
+    <line x1="20" y1="330" x2="260" y2="330" stroke="#a1887f" stroke-width="7" stroke-linecap="round" />
+    <line x1="20" y1="330" x2="260" y2="330" stroke="#3e2723" stroke-width="7" stroke-dasharray="15 30" stroke-linecap="round" />
+    <!-- Roasted Marshmallow -->
+    <rect x="180" y="315" width="45" height="30" rx="8" fill="#fff8e1" stroke="#2e1c0c" stroke-width="5" />
+    <!-- Toasted spot -->
+    <ellipse cx="202" cy="330" rx="14" ry="8" fill="#d7ccc8" />
+    <ellipse cx="205" cy="330" rx="9" ry="5" fill="#8d6e63" />
   </g>
 </svg>

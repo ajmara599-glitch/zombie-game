@@ -1,34 +1,2201 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <title>Элизиум: Хроники Зомби-Апокалипсиса 3D</title>
-    <meta name="description" content="Браузерный 3D экшен-RPG с сел-шейдингом в стиле аниме, видом от третьего лица и сверху, голосовым ИИ-помощником, транспортом, диалогами в стиле визуальной новеллы и системой выживания." />
-    <meta property="og:title" content="Элизиум: Хроники Зомби-Апокалипсиса 3D" />
-    <meta property="og:description" content="Браузерный 3D экшен-RPG с сел-шейдингом в стиле аниме, видом от третьего лица и сверху, голосовым ИИ-помощником, транспортом, диалогами в стиле визуальной новеллы и системой выживания." />
-    <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Total Drama: Island Novel</title>
+  <meta name="description" content="Классическая визуальная новелла по 1-му сезону Total Drama Island с озвучкой персонажей, фоновой музыкой, множеством сюжетных линий и горизонтальным режимом." />
+  <meta property="og:title" content="Total Drama: Island Novel" />
+  <meta property="og:description" content="Классическая визуальная новелла по 1-му сезону Total Drama Island с озвучкой персонажей, фоновой музыкой, множеством сюжетных линий и горизонтальным режимом." />
+  <meta property="og:type" content="game" />
+  <meta name="theme-color" content="#8d4925" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="TDI Novel" />
 
-    <!-- PWA / Mobile Web App Meta Tags -->
-    <meta name="theme-color" content="#090d16" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="Элизиум 3D" />
+  <!-- PWA Manifest & Icons -->
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/svg+xml" href="icon.svg" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
 
-    <!-- Icons -->
-    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
-    <link rel="icon" type="image/png" sizes="64x64" href="/favicon-64x64.png" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <!-- Google Fonts: Bebas Neue, Montserrat -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Plus+Jakarta+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-  </head>
-  <body class="bg-slate-950 text-slate-100 overflow-hidden select-none">
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+  <style>
+    :root {
+      --font-title: 'Bebas Neue', 'Impact', sans-serif;
+      --font-dialog: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --wood-dark: #3b1706;
+      --wood-mid: #6f3517;
+      --gold-tdi: #ffb300;
+      --gold-bright: #ffea00;
+      --fire-orange: #ff5722;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #050811;
+      font-family: var(--font-dialog);
+      color: #ffffff;
+    }
+
+    /* Main Landscape Game Viewport Container (Locked to 16:9 ratio feel) */
+    #game-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background-color: #0b111e;
+    }
+
+    /* Background Layer with Smooth Dynamic Transition */
+    #bg-layer {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center bottom;
+      background-repeat: no-repeat;
+      transition: background-image 0.5s ease-in-out, filter 0.5s ease;
+      z-index: 1;
+    }
+
+    /* Cinematic Vignette Overlay */
+    #vignette-overlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, transparent 45%, rgba(0, 0, 0, 0.7) 100%);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* Screen Shake on Negative Emotion / Thunder */
+    .shake-screen {
+      animation: screenShake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    }
+
+    @keyframes screenShake {
+      10%, 90% { transform: translate3d(-3px, 0, 0); }
+      20%, 80% { transform: translate3d(5px, 0, 0); }
+      30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+      40%, 60% { transform: translate3d(6px, 0, 0); }
+    }
+
+    /* Emotion Floating Floating Badges (+/- Relations) */
+    #emotion-floater {
+      position: absolute;
+      top: 30%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.6);
+      z-index: 45;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-family: var(--font-title);
+      font-size: clamp(22px, 3.5vw, 32px);
+      letter-spacing: 2px;
+      pointer-events: none;
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      white-space: nowrap;
+    }
+
+    #emotion-floater.good {
+      background: linear-gradient(135deg, #15803d 0%, #047857 100%);
+      border: 3px solid #86efac;
+      color: #ffffff;
+      opacity: 1;
+      transform: translate(-50%, -80px) scale(1.05);
+    }
+
+    #emotion-floater.bad {
+      background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+      border: 3px solid #fca5a5;
+      color: #ffffff;
+      opacity: 1;
+      transform: translate(-50%, -80px) scale(1.05);
+    }
+
+    /* Character Sprites Stage */
+    #stage-sprites {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      pointer-events: none;
+      z-index: 3;
+      padding-bottom: clamp(110px, 20vh, 180px);
+      overflow: hidden;
+    }
+
+    .sprite-slot {
+      position: absolute;
+      bottom: 0;
+      height: 82%;
+      max-height: 680px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
+      filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.75));
+    }
+
+    .sprite-slot.slot-left {
+      left: 6%;
+      transform: translateX(0);
+    }
+
+    .sprite-slot.slot-center {
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .sprite-slot.slot-right {
+      right: 6%;
+      transform: translateX(0);
+    }
+
+    .sprite-slot.inactive {
+      filter: brightness(0.5) contrast(0.85) drop-shadow(0 10px 15px rgba(0, 0, 0, 0.9));
+    }
+
+    .sprite-slot.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(40px) scale(0.92);
+    }
+
+    .sprite-slot.slot-center.hidden {
+      transform: translate(-50%, 40px) scale(0.92);
+    }
+
+    .sprite-img {
+      height: 100%;
+      width: auto;
+      max-width: 80vw;
+      object-fit: contain;
+      transition: transform 0.25s ease;
+    }
+
+    .sprite-slot.happy .sprite-img {
+      animation: spriteHappy 0.5s ease-out;
+    }
+
+    @keyframes spriteHappy {
+      0% { transform: translateY(0); }
+      40% { transform: translateY(-24px) scale(1.04); }
+      70% { transform: translateY(6px); }
+      100% { transform: translateY(0); }
+    }
+
+    .sprite-slot.angry .sprite-img {
+      animation: spriteAngry 0.4s ease-in-out;
+    }
+
+    @keyframes spriteAngry {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-4deg) translateX(-6px); }
+      75% { transform: rotate(4deg) translateX(6px); }
+    }
+
+    /* Top HUD Bar */
+    #top-hud {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: clamp(48px, 7vh, 60px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 clamp(12px, 3vw, 24px);
+      z-index: 20;
+      background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
+      pointer-events: auto;
+    }
+
+    .hud-title-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-title);
+      font-size: clamp(18px, 2.8vw, 26px);
+      letter-spacing: 2px;
+      color: var(--gold-bright);
+      text-shadow: 2px 2px 0 #000, 0 0 10px rgba(255, 180, 0, 0.6);
+    }
+
+    .hud-episode-chip {
+      background: #c0392b;
+      color: #fff;
+      font-family: var(--font-dialog);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
+
+    .hud-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-icon {
+      background: rgba(20, 20, 25, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(4px);
+    }
+
+    .btn-icon:hover, .btn-icon:active {
+      background: rgba(255, 179, 0, 0.25);
+      border-color: var(--gold-tdi);
+      color: var(--gold-bright);
+      transform: translateY(-1px);
+    }
+
+    .btn-icon.active {
+      background: var(--gold-tdi);
+      color: #1a0802;
+      border-color: #fff;
+      box-shadow: 0 0 10px rgba(255, 180, 0, 0.7);
+    }
+
+    /* Dialogue Section at Bottom */
+    #dialogue-container {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 25;
+      padding: clamp(8px, 1.8vh, 16px) clamp(16px, 4vw, 40px) clamp(12px, 2.5vh, 24px);
+      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(9, 13, 22, 0.95) 25%, rgba(6, 9, 16, 0.98) 100%);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* Dialogue Box */
+    #dialogue-box {
+      position: relative;
+      background: rgba(15, 23, 42, 0.94);
+      border: 3px solid #6f3517;
+      outline: 2px solid #000000;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(12px);
+      padding: clamp(12px, 2vh, 20px) clamp(16px, 3vw, 28px);
+      min-height: clamp(96px, 16vh, 140px);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: border-color 0.2s ease;
+    }
+
+    #dialogue-box:hover {
+      border-color: #9c4f24;
+    }
+
+    /* Speaker Badge */
+    #speaker-badge {
+      position: absolute;
+      top: -16px;
+      left: 20px;
+      padding: 3px 16px;
+      font-family: var(--font-title);
+      font-size: clamp(18px, 2.8vw, 26px);
+      letter-spacing: 2px;
+      color: #ffffff;
+      background: linear-gradient(180deg, #6f3517 0%, #3b1706 100%);
+      border: 2px solid #ffb300;
+      border-radius: 6px;
+      text-shadow: 2px 2px 0 #000;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+      display: inline-block;
+      white-space: nowrap;
+    }
+
+    /* Speaker badge color themes */
+    #speaker-badge.speaker-heather {
+      background: linear-gradient(180deg, #b91c1c 0%, #7f1d1d 100%);
+      border-color: #fca5a5;
+    }
+    #speaker-badge.speaker-chris {
+      background: linear-gradient(180deg, #d97706 0%, #78350f 100%);
+      border-color: #fde047;
+    }
+    #speaker-badge.speaker-gwen {
+      background: linear-gradient(180deg, #0e7490 0%, #164e63 100%);
+      border-color: #67e8f9;
+    }
+    #speaker-badge.speaker-owen {
+      background: linear-gradient(180deg, #15803d 0%, #14532d 100%);
+      border-color: #86efac;
+    }
+    #speaker-badge.speaker-duncan {
+      background: linear-gradient(180deg, #166534 0%, #052e16 100%);
+      border-color: #4ade80;
+    }
+    #speaker-badge.speaker-courtney {
+      background: linear-gradient(180deg, #4d7c0f 0%, #365314 100%);
+      border-color: #bef264;
+    }
+    #speaker-badge.speaker-chef {
+      background: linear-gradient(180deg, #ea580c 0%, #9a3412 100%);
+      border-color: #fdba74;
+    }
+    #speaker-badge.speaker-lolita {
+      background: linear-gradient(180deg, #7e22ce 0%, #581c87 100%);
+      border-color: #e9d5ff;
+    }
+    #speaker-badge.speaker-piter {
+      background: linear-gradient(180deg, #1d4ed8 0%, #1e3a8a 100%);
+      border-color: #93c5fd;
+    }
+
+    /* Dialogue Text */
+    #dialogue-text {
+      font-size: clamp(14px, 2.1vw, 18px);
+      line-height: 1.45;
+      font-weight: 500;
+      color: #f8fafc;
+      margin-top: 6px;
+      word-break: break-word;
+    }
+
+    /* Next indicator arrow */
+    #dialogue-indicator {
+      align-self: flex-end;
+      width: 0;
+      height: 0;
+      border-left: 9px solid transparent;
+      border-right: 9px solid transparent;
+      border-top: 13px solid var(--gold-tdi);
+      animation: pulseIndicator 0.8s infinite alternate ease-in-out;
+      margin-top: 4px;
+      filter: drop-shadow(0 2px 4px #000);
+    }
+
+    @keyframes pulseIndicator {
+      0% { transform: translateY(0); opacity: 0.6; }
+      100% { transform: translateY(5px); opacity: 1; }
+    }
+
+    /* Choice Overlay Panel */
+    #choices-container {
+      position: absolute;
+      inset: 0;
+      background: rgba(5, 8, 15, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 35;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      gap: 12px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    #choices-container.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .choice-prompt {
+      font-family: var(--font-title);
+      font-size: clamp(22px, 3.6vw, 34px);
+      letter-spacing: 2px;
+      color: var(--gold-bright);
+      text-shadow: 2px 2px 0 #000, 0 0 15px rgba(255, 180, 0, 0.5);
+      text-align: center;
+    }
+
+    .choice-btn {
+      width: 100%;
+      max-width: 680px;
+      padding: clamp(12px, 2.2vh, 18px) 20px;
+      background: linear-gradient(180deg, #55260e 0%, #2a0f03 100%);
+      border: 3px solid #ffb300;
+      outline: 2px solid #000000;
+      border-radius: 10px;
+      color: #ffffff;
+      font-family: var(--font-dialog);
+      font-size: clamp(14px, 2vw, 17px);
+      font-weight: 700;
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .choice-btn:hover, .choice-btn:active {
+      transform: scale(1.02) translateX(4px);
+      background: linear-gradient(180deg, #7c3a13 0%, #451b06 100%);
+      border-color: #fff176;
+      box-shadow: 0 8px 25px rgba(255, 180, 0, 0.4);
+    }
+
+    .choice-marker {
+      background: var(--gold-tdi);
+      color: #1a0903;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 14px;
+      flex-shrink: 0;
+      border: 2px solid #000;
+    }
+
+    .choice-impact {
+      margin-left: auto;
+      font-size: 12px;
+      font-weight: 800;
+      color: #86efac;
+      background: rgba(0,0,0,0.4);
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    /* Start / Character Select Screen */
+    #start-screen {
+      position: absolute;
+      inset: 0;
+      z-index: 50;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: clamp(14px, 3vh, 32px) clamp(16px, 4vw, 32px);
+      overflow-y: auto;
+      transition: opacity 0.5s ease;
+    }
+
+    #start-screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .title-logo-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .logo-badge {
+      background: #c0392b;
+      color: #fff;
+      font-family: var(--font-title);
+      font-size: clamp(18px, 3vw, 26px);
+      letter-spacing: 5px;
+      padding: 3px 18px;
+      border-radius: 6px;
+      border: 2px solid #000;
+      transform: rotate(-2deg);
+    }
+
+    .logo-main-text {
+      font-family: var(--font-title);
+      font-size: clamp(42px, 8vw, 76px);
+      letter-spacing: 4px;
+      line-height: 0.95;
+      color: var(--gold-tdi);
+      text-shadow: 4px 4px 0 #000, 0 6px 15px rgba(0, 0, 0, 0.9);
+      margin: 6px 0 2px;
+    }
+
+    .logo-sub-text {
+      font-family: var(--font-title);
+      font-size: clamp(24px, 4.5vw, 42px);
+      letter-spacing: 7px;
+      color: #ffea00;
+      text-shadow: 3px 3px 0 #000;
+    }
+
+    /* Character Selection Deck */
+    .char-select-section {
+      width: 100%;
+      max-width: 900px;
+      background: rgba(10, 15, 26, 0.93);
+      border: 3px solid #6f3517;
+      outline: 2px solid #000;
+      border-radius: 14px;
+      padding: clamp(12px, 2.5vh, 22px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(10px);
+      margin: 10px 0;
+    }
+
+    .char-select-heading {
+      text-align: center;
+      font-family: var(--font-title);
+      font-size: clamp(22px, 3.5vw, 30px);
+      color: var(--gold-tdi);
+      letter-spacing: 2px;
+      margin-bottom: 4px;
+    }
+
+    .char-select-subheading {
+      text-align: center;
+      font-size: 12px;
+      color: #cbd5e1;
+      margin-bottom: 14px;
+    }
+
+    .char-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .char-card {
+      background: rgba(22, 30, 49, 0.85);
+      border: 3px solid #334155;
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .char-card:hover {
+      border-color: var(--gold-tdi);
+      transform: translateY(-3px);
+    }
+
+    .char-card.selected {
+      border-color: #ffea00;
+      background: rgba(35, 46, 75, 0.95);
+      box-shadow: 0 0 0 3px #ffea00, 0 10px 30px rgba(0, 0, 0, 0.8);
+      transform: scale(1.02);
+    }
+
+    .char-card-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #c0392b;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+
+    .char-avatar-frame {
+      width: 120px;
+      height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .char-avatar-img {
+      max-height: 100%;
+      max-width: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 12px rgba(0,0,0,0.6));
+    }
+
+    .char-name {
+      font-family: var(--font-title);
+      font-size: 26px;
+      letter-spacing: 2px;
+      margin-bottom: 4px;
+    }
+
+    .char-desc {
+      font-size: 12px;
+      line-height: 1.35;
+      color: #cbd5e1;
+      text-align: center;
+      margin-bottom: 10px;
+      min-height: 48px;
+    }
+
+    .start-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      width: 100%;
+      max-width: 600px;
+      margin-top: 8px;
+    }
+
+    .btn-main {
+      flex: 1;
+      min-width: 180px;
+      padding: 14px 24px;
+      background: linear-gradient(180deg, #ffb300 0%, #e65100 100%);
+      border: 3px solid #ffea00;
+      outline: 2px solid #000;
+      border-radius: 12px;
+      color: #1a0802;
+      font-family: var(--font-title);
+      font-size: clamp(20px, 3.2vw, 26px);
+      letter-spacing: 2px;
+      cursor: pointer;
+      text-align: center;
+      box-shadow: 0 6px 20px rgba(255, 111, 0, 0.6);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .btn-main:hover, .btn-main:active {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 10px 30px rgba(255, 179, 0, 0.8);
+    }
+
+    .btn-secondary {
+      padding: 12px 20px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 2px solid #64748b;
+      border-radius: 12px;
+      color: #e2e8f0;
+      font-family: var(--font-dialog);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-secondary:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* PWA Install Button */
+    .btn-install {
+      background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
+      border: 2px solid #93c5fd;
+      color: #ffffff;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Landscape Advisory Screen on Mobile Portrait */
+    #rotate-hint {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 8, 17, 0.96);
+      z-index: 9999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+      color: #f8fafc;
+    }
+
+    @media (orientation: portrait) and (max-width: 900px) {
+      #rotate-hint {
+        display: flex;
+      }
+    }
+
+    .rotate-icon {
+      font-size: 54px;
+      margin-bottom: 16px;
+      animation: rotateAnim 2s infinite ease-in-out;
+    }
+
+    @keyframes rotateAnim {
+      0%, 10% { transform: rotate(0deg); }
+      50%, 60% { transform: rotate(90deg); }
+      90%, 100% { transform: rotate(0deg); }
+    }
+
+    /* Voting / Elimination Ceremony Modal */
+    #voting-modal {
+      position: absolute;
+      inset: 0;
+      z-index: 60;
+      background: rgba(6, 9, 16, 0.92);
+      backdrop-filter: blur(12px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+
+    #voting-modal.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .voting-card {
+      width: 100%;
+      max-width: 720px;
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      border: 3px solid #ff5722;
+      outline: 2px solid #000;
+      border-radius: 14px;
+      padding: clamp(14px, 2.5vh, 24px);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .voting-title {
+      font-family: var(--font-title);
+      font-size: clamp(24px, 3.5vw, 34px);
+      color: #ff9100;
+      letter-spacing: 2px;
+      text-align: center;
+    }
+
+    .voting-targets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 10px;
+      max-height: 260px;
+      overflow-y: auto;
+      padding: 4px;
+    }
+
+    .voting-target-btn {
+      background: #1e293b;
+      border: 2px solid #475569;
+      border-radius: 8px;
+      padding: 8px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .voting-target-btn.selected {
+      border-color: #ff3d00;
+      background: #7f1d1d;
+      box-shadow: 0 0 12px rgba(255, 61, 0, 0.6);
+    }
+
+    /* History Log Modal */
+    #history-modal {
+      position: absolute;
+      inset: 0;
+      z-index: 70;
+      background: rgba(5, 8, 15, 0.9);
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      padding: clamp(20px, 4vh, 40px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    #history-modal.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #334155;
+    }
+
+    .history-content {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .history-row {
+      background: rgba(15, 23, 42, 0.7);
+      border-left: 4px solid var(--gold-tdi);
+      padding: 8px 12px;
+      border-radius: 0 6px 6px 0;
+    }
+
+    .history-speaker {
+      font-weight: 800;
+      font-size: 12px;
+      color: var(--gold-tdi);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .history-text {
+      font-size: 13px;
+      color: #e2e8f0;
+    }
+
+    /* Toast Notification */
+    #status-toast {
+      position: absolute;
+      top: 65px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: rgba(15, 23, 42, 0.95);
+      border: 2px solid var(--gold-tdi);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 6px 16px;
+      border-radius: 20px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.7);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s ease;
+      z-index: 80;
+    }
+
+    #status-toast.active {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <!-- Landscape advisory for mobile portrait -->
+  <div id="rotate-hint">
+    <div class="rotate-icon">📱 ➔ 🔄</div>
+    <h2 style="font-family:var(--font-title); font-size:28px; color:var(--gold-bright); margin-bottom:8px;">ПОВЕРНИТЕ ТЕЛЕФОН</h2>
+    <p style="font-size:14px; color:#cbd5e1; max-width:320px; line-height:1.4;">
+      Для полного погружения в «Total Drama: Island Novel» используйте альбомный (горизонтальный) режим.
+    </p>
+    <button onclick="document.getElementById('rotate-hint').style.display='none'" style="margin-top:18px; padding:10px 20px; background:#475569; border:none; border-radius:8px; color:#fff; font-weight:700;">
+      Продолжить вертикально
+    </button>
+  </div>
+
+  <div id="game-container">
+    <!-- Dynamic Background Layer -->
+    <div id="bg-layer" style="background-image: url('bg_lake.jpg');"></div>
+    <div id="vignette-overlay"></div>
+
+    <!-- Floating Emotion Impact Feedback -->
+    <div id="emotion-floater"></div>
+
+    <!-- Character Sprites Stage -->
+    <div id="stage-sprites">
+      <!-- Left Sprite -->
+      <div id="slot-left" class="sprite-slot slot-left hidden">
+        <img id="img-sprite-left" class="sprite-img" src="" alt="Left Character" />
+      </div>
+
+      <!-- Center Sprite (Heather / Chris / Special) -->
+      <div id="slot-center" class="sprite-slot slot-center hidden">
+        <img id="img-sprite-center" class="sprite-img" src="heather_pose1.png" alt="Center Character" />
+      </div>
+
+      <!-- Right Sprite -->
+      <div id="slot-right" class="sprite-slot slot-right hidden">
+        <img id="img-sprite-right" class="sprite-img" src="" alt="Right Character" />
+      </div>
+    </div>
+
+    <!-- Top HUD Bar -->
+    <header id="top-hud">
+      <div class="hud-title-badge">
+        <span>TOTAL DRAMA</span>
+        <div id="hud-episode-chip" class="hud-episode-chip">Серия 1: Высадка</div>
+      </div>
+      <div class="hud-controls">
+        <button id="btn-bgm" class="btn-icon" title="Фоновая музыка острова">
+          <span id="bgm-icon">🎵 BGM: ВКЛ</span>
+        </button>
+        <button id="btn-voice" class="btn-icon" title="Озвучка реплик персонажей">
+          <span id="voice-icon">🗣️ ГОЛОС: ВКЛ</span>
+        </button>
+        <button id="btn-sound" class="btn-icon" title="Звуковые эффекты">
+          <span id="sound-icon">🔊 SFX</span>
+        </button>
+        <button id="btn-auto" class="btn-icon" title="Авточтение">
+          <span>AUTO</span>
+        </button>
+        <button id="btn-log" class="btn-icon" title="История диалогов">
+          <span>LOG</span>
+        </button>
+        <button id="btn-save" class="btn-icon" title="Быстрое сохранение">
+          <span>SAVE</span>
+        </button>
+        <button id="btn-fullscreen" class="btn-icon" title="Полноэкранный режим">
+          <span>⛶</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Bottom Dialogue Section -->
+    <section id="dialogue-container">
+      <div id="dialogue-box">
+        <div id="speaker-badge" class="speaker-chris">Крис Маклин</div>
+        <div id="dialogue-text">Добро пожаловать в лагерь Ваванаква!</div>
+        <div id="dialogue-indicator"></div>
+      </div>
+    </section>
+
+    <!-- Branching Choices Overlay -->
+    <div id="choices-container">
+      <div id="choices-prompt" class="choice-prompt">ТВОЁ РЕШЕНИЕ:</div>
+      <div id="choices-list" style="display:flex; flex-direction:column; gap:10px; width:100%; max-width:680px;"></div>
+    </div>
+
+    <!-- Campfire Voting Ceremony Modal -->
+    <div id="voting-modal">
+      <div class="voting-card">
+        <div class="voting-title">ЦЕРЕМОНИЯ У КОСТРА: ГОЛОСОВАНИЕ</div>
+        <div id="voting-desc" style="font-size:13px; color:#cbd5e1; text-align:center;">
+          Команда проиграла испытание. Выберите участника в исповедальной кабинке, чей факел навсегда погаснет!
+        </div>
+        <div id="voting-targets" class="voting-targets-grid"></div>
+        <button id="btn-confirm-vote" class="btn-main" style="margin-top:8px; width:100%;">ОТДАТЬ РЕШАЮЩИЙ ГОЛОС</button>
+      </div>
+    </div>
+
+    <!-- History Log Modal -->
+    <div id="history-modal">
+      <div class="history-header">
+        <div style="font-family:var(--font-title); font-size:26px; color:var(--gold-tdi); letter-spacing:2px;">ИСТОРИЯ ДИАЛОГОВ</div>
+        <button id="btn-close-log" class="btn-icon">ЗАКРЫТЬ ✕</button>
+      </div>
+      <div id="history-list" class="history-content"></div>
+    </div>
+
+    <!-- Status Toast Notification -->
+    <div id="status-toast">Игра сохранена!</div>
+
+    <!-- Main Menu & Character Selection Screen -->
+    <div id="start-screen" style="background-image: url('bg_campfire.jpg');">
+      <div class="title-logo-container">
+        <div class="logo-badge">CAMP WAWANAKWA</div>
+        <h1 class="logo-main-text">TOTAL DRAMA</h1>
+        <div class="logo-sub-text">ISLAND NOVEL</div>
+      </div>
+
+      <div class="char-select-section">
+        <div class="char-select-heading">ВЫБЕРИ СВОЕГО УЧАСТНИКА</div>
+        <div class="char-select-subheading">
+          Один станет героем 1-го сезона Total Drama Island. Второй навсегда исчезнет из игры!
+        </div>
+
+        <div class="char-cards-grid">
+          <!-- Lolita Card -->
+          <div id="card-lolita" class="char-card selected" onclick="selectHero('lolita')">
+            <div class="char-card-badge">ДЕВУШКА</div>
+            <div class="char-avatar-frame">
+              <img src="lolita.png" alt="Лолита" class="char-avatar-img" />
+            </div>
+            <div class="char-name" style="color: #c084fc;">ЛОЛИТА</div>
+            <div class="char-desc">
+              Фиолетовая куртка, дерзкий сарказм, женский голос. Раскусывает коварные интриги Хизер и умеет постоять за команду.
+            </div>
+          </div>
+
+          <!-- Peter Card -->
+          <div id="card-piter" class="char-card" onclick="selectHero('piter')">
+            <div class="char-card-badge">ПАРЕНЬ</div>
+            <div class="char-avatar-frame">
+              <img src="piter.png" alt="Питер" class="char-avatar-img" />
+            </div>
+            <div class="char-name" style="color: #60a5fa;">ПИТЕР</div>
+            <div class="char-desc">
+              Синяя куртка, хладнокровный аналитический расчёт, мужской голос. Мастер неожиданных тактических ходов в испытаниях.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="start-actions">
+        <button id="btn-start-game" class="btn-main">НАЧАТЬ ИГРУ</button>
+        <button id="btn-continue-game" class="btn-secondary" disabled>ПРОДОЛЖИТЬ (НЕТ СОХРАНЕНИЙ)</button>
+        <button id="btn-install-pwa" class="btn-install" style="display:none;">📲 УСТАНОВИТЬ НА ТЕЛЕФОН</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ==========================================================================
+       TDI NOVEL ENGINE: AUDIO SYNTHESIZER, BGM & DYNAMIC TTS SPEECH SYSTEM
+       ========================================================================== */
+
+    class SoundAndMusicEngine {
+      constructor() {
+        this.ctx = null;
+        this.sfxMuted = false;
+        this.bgmMuted = false;
+        this.voiceEnabled = true;
+        this.bgmTimer = null;
+        this.bgmIndex = 0;
+        this.bgmGain = null;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) {
+            this.ctx = new AudioCtx();
+            this.bgmGain = this.ctx.createGain();
+            this.bgmGain.gain.setValueAtTime(0.08, this.ctx.currentTime);
+            this.bgmGain.connect(this.ctx.destination);
+          }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      playClick() {
+        if (this.sfxMuted) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(540, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(180, this.ctx.currentTime + 0.04);
+        gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.04);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.04);
+      }
+
+      playTypeKey() {
+        if (this.sfxMuted) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        const freq = 580 + Math.random() * 220;
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.025, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.02);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.02);
+      }
+
+      playGoodEmotion() {
+        if (this.sfxMuted) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const notes = [440, 554.37, 659.25, 880];
+        notes.forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.06);
+          gain.gain.setValueAtTime(0.12, this.ctx.currentTime + idx * 0.06);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + idx * 0.06 + 0.25);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(this.ctx.currentTime + idx * 0.06);
+          osc.stop(this.ctx.currentTime + idx * 0.06 + 0.28);
+        });
+      }
+
+      playBadEmotion() {
+        if (this.sfxMuted) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const notes = [300, 260, 220, 160];
+        notes.forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.07);
+          gain.gain.setValueAtTime(0.14, this.ctx.currentTime + idx * 0.07);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + idx * 0.07 + 0.3);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(this.ctx.currentTime + idx * 0.07);
+          osc.stop(this.ctx.currentTime + idx * 0.07 + 0.32);
+        });
+      }
+
+      playCampfireSting() {
+        if (this.sfxMuted) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(140, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(45, this.ctx.currentTime + 1.2);
+        gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 1.2);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 1.2);
+      }
+
+      // Procedural Background Music: Camp Wawanakwa Island Groove
+      startBGM() {
+        this.init();
+        if (this.bgmMuted || this.bgmTimer) return;
+
+        // Acoustic Campfire Chord Progression: Em - G - D - C (Classic Summer Island Camp)
+        const chords = [
+          [164.81, 196.00, 246.94, 329.63], // Em
+          [196.00, 246.94, 293.66, 392.00], // G
+          [146.83, 220.00, 293.66, 369.99], // D
+          [130.81, 164.81, 261.63, 329.63]  // C
+        ];
+
+        this.bgmTimer = setInterval(() => {
+          if (this.bgmMuted || !this.ctx) return;
+          const chord = chords[this.bgmIndex % chords.length];
+          this.bgmIndex++;
+
+          // Pluck 4 notes like an acoustic guitar
+          chord.forEach((freq, i) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, this.ctx.currentTime + i * 0.22);
+            gain.gain.setValueAtTime(0.04, this.ctx.currentTime + i * 0.22);
+            gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + i * 0.22 + 0.8);
+            osc.connect(gain);
+            gain.connect(this.bgmGain);
+            osc.start(this.ctx.currentTime + i * 0.22);
+            osc.stop(this.ctx.currentTime + i * 0.22 + 0.85);
+          });
+        }, 1100);
+      }
+
+      stopBGM() {
+        if (this.bgmTimer) {
+          clearInterval(this.bgmTimer);
+          this.bgmTimer = null;
+        }
+      }
+
+      // Speech Synthesis tailored to Character Gender & Personality
+      speakDialogue(speaker, text, gender) {
+        if (!this.voiceEnabled || !('speechSynthesis' in window)) return;
+        window.speechSynthesis.cancel(); // Stop prior speech
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'ru-RU';
+
+        // Select voices if available
+        const voices = window.speechSynthesis.getVoices();
+        const ruVoices = voices.filter(v => v.lang.startsWith('ru'));
+
+        // Character-specific Voice Pitch & Rates
+        if (gender === 'female') {
+          // Female characters
+          if (speaker.includes('Хизер')) {
+            utterance.pitch = 1.25; // Cold, haughty
+            utterance.rate = 1.0;
+          } else if (speaker.includes('Гвен')) {
+            utterance.pitch = 1.02; // Sarcastic, calm
+            utterance.rate = 0.92;
+          } else if (speaker.includes('Кортни')) {
+            utterance.pitch = 1.20; // Bossy CIT
+            utterance.rate = 1.1;
+          } else {
+            // Lolita / others
+            utterance.pitch = 1.18;
+            utterance.rate = 1.02;
+          }
+          const femaleVoice = ruVoices.find(v => v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('milena') || v.name.toLowerCase().includes('tatyana') || v.name.toLowerCase().includes('irina'));
+          if (femaleVoice) utterance.voice = femaleVoice;
+        } else {
+          // Male characters
+          if (speaker.includes('Крис')) {
+            utterance.pitch = 1.04; // Showy TV host
+            utterance.rate = 1.08;
+          } else if (speaker.includes('Оуэн')) {
+            utterance.pitch = 0.82; // Jolly, deep
+            utterance.rate = 1.15;
+          } else if (speaker.includes('Дункан')) {
+            utterance.pitch = 0.72; // Raspy punk
+            utterance.rate = 0.92;
+          } else if (speaker.includes('Шеф')) {
+            utterance.pitch = 0.65; // Thunderous deep
+            utterance.rate = 0.95;
+          } else {
+            // Peter / others
+            utterance.pitch = 0.88;
+            utterance.rate = 1.0;
+          }
+          const maleVoice = ruVoices.find(v => v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('pavel') || v.name.toLowerCase().includes('dmitri') || v.name.toLowerCase().includes('aleksandr'));
+          if (maleVoice) utterance.voice = maleVoice;
+        }
+
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    const audio = new SoundAndMusicEngine();
+
+    // Game State
+    const state = {
+      hero: 'lolita',
+      sceneIndex: 0,
+      dialogueIndex: 0,
+      isTyping: false,
+      typewriterTimer: null,
+      autoPlay: false,
+      autoTimer: null,
+      history: [],
+      relations: {
+        heather: 0,
+        gwen: 0,
+        owen: 0,
+        duncan: 0,
+        courtney: 0
+      },
+      selectedVoteTarget: null,
+      eliminatedContestants: []
+    };
+
+    // Story Script with Multiple Branching Storylines, Emotions & Varied Locations
+    function buildStoryScript(hero) {
+      const heroName = hero === 'lolita' ? 'Лолита' : 'Питер';
+      const heroGender = hero === 'lolita' ? 'female' : 'male';
+      const heroSprite = hero === 'lolita' ? 'lolita.png' : 'piter.png';
+      const heroColorClass = hero === 'lolita' ? 'speaker-lolita' : 'speaker-piter';
+
+      return [
+        /* ================= СЦЕНА 1: ВЫСАДКА НА ОСТРОВ ================= */
+        {
+          id: 'arrival',
+          title: 'Серия 1: Причал Позора и первое знакомство',
+          bg: 'bg_lake.jpg',
+          lines: [
+            {
+              speaker: 'Крис Маклин',
+              gender: 'male',
+              speakerClass: 'speaker-chris',
+              centerSprite: null,
+              leftSprite: null,
+              text: 'Йоу! Мы ведем прямую трансляцию из лагеря Ваванаква! Сегодня двадцать два подростка сразятся за сто тысяч долларов!'
+            },
+            {
+              speaker: 'Крис Маклин',
+              gender: 'male',
+              speakerClass: 'speaker-chris',
+              leftSprite: heroSprite,
+              text: `А вот и наш новый участник — ${heroName}! Добро пожаловать на остров!`
+            },
+            {
+              speaker: heroName,
+              gender: heroGender,
+              speakerClass: heroColorClass,
+              leftSprite: heroSprite,
+              text: hero === 'lolita'
+                ? 'Брошюра обещала роскошный курорт, а тут запах тухлой рыбы и гнилые доски. Прекрасное начало.'
+                : 'Похоже, продюсеры сэкономили на всём. Надеюсь, призовые деньги хотя бы настоящие.'
+            },
+            {
+              speaker: 'Гвен',
+              gender: 'female',
+              speakerClass: 'speaker-gwen',
+              leftSprite: heroSprite,
+              text: 'Ха. Приятно видеть хоть кого-то адекватного. Я Гвен. Держись подальше от стряпни Шефа, если ценишь жизнь.'
+            },
+            {
+              speaker: 'Оуэн',
+              gender: 'male',
+              speakerClass: 'speaker-owen',
+              leftSprite: heroSprite,
+              text: 'ВУ-ХУУУУ! Привет, новенький! Это будет САМОЕ ЛУЧШЕЕ ЛЕТО! Дай пять!'
+            }
+          ]
+        },
+
+        /* ================= СЦЕНА 2: ВЫБОР СЮЖЕТНОЙ ЛИНИИ ================= */
+        {
+          id: 'story_branch_hub',
+          title: 'Серия 2: Развилка альянсов и лагерных интриг',
+          bg: 'bg_lake.jpg',
+          lines: [
+            {
+              speaker: 'Хизер',
+              gender: 'female',
+              speakerClass: 'speaker-heather',
+              centerSprite: 'heather_pose2.png',
+              leftSprite: heroSprite,
+              text: `Эй, ${heroName}. Подойди сюда. У меня нет времени нянчиться с неудачниками.`
+            },
+            {
+              speaker: 'Хизер',
+              gender: 'female',
+              speakerClass: 'speaker-heather',
+              centerSprite: 'heather_pose1.png',
+              leftSprite: heroSprite,
+              text: 'Я создаю тайный альянс. Ты либо со мной, либо твоё имя окажется в урне на первом же голосовании.'
+            },
+            {
+              speaker: 'Дункан',
+              gender: 'male',
+              speakerClass: 'speaker-duncan',
+              leftSprite: heroSprite,
+              centerSprite: 'heather_pose2.png',
+              text: 'Эй, принцесса, не дави на новенького. У нас сегодня ночью план получше: налёт на кухню Шефа за нормальной едой!'
+            }
+          ],
+          choice: {
+            prompt: 'Какой сюжетный путь ты выберешь?',
+            options: [
+              {
+                text: 'Сюжет Хизер: Вступить в женский альянс интриганок',
+                impact: '👑 Путь Интриг (+Хизер)',
+                emotion: { type: 'good', text: '+ Доверие Хизер! 👑' },
+                relations: { heather: 3, gwen: -2 },
+                nextScene: 'branch_heather'
+              },
+              {
+                text: 'Сюжет Дункана: Ночной налёт на кладовую Шефа',
+                impact: '🍖 Путь Бунтарей (+Дункан, +Оуэн)',
+                emotion: { type: 'good', text: '+ Уважение Дункана! 🎸' },
+                relations: { duncan: 3, owen: 2, heather: -1 },
+                nextScene: 'branch_duncan_raid'
+              },
+              {
+                text: 'Сюжет Гвен: Раскрыть козни Хизер и сплотить команду',
+                impact: '🖤 Путь Искренности (+Гвен)',
+                emotion: { type: 'good', text: '+ Дружба с Гвен! 🖤' },
+                relations: { gwen: 3, heather: -3 },
+                nextScene: 'branch_gwen_friendship'
+              }
+            ]
+          }
+        },
+
+        /* ================= СЮЖЕТНАЯ ЛИНИЯ А: АЛЬЯНС ХИЗЕР ================= */
+        {
+          id: 'branch_heather',
+          title: 'Ветка Хизер: Тайный совет у озера',
+          bg: 'bg_lake.jpg',
+          lines: [
+            {
+              speaker: 'Хизер',
+              gender: 'female',
+              speakerClass: 'speaker-heather',
+              centerSprite: 'heather_pose2.png',
+              leftSprite: heroSprite,
+              text: 'Разумный выбор. Линдси и Бет уже под моим контролем. Теперь мы решаем, кто покинет проект.'
+            },
+            {
+              speaker: 'Хизер',
+              gender: 'female',
+              speakerClass: 'speaker-heather',
+              centerSprite: 'heather_pose1.png',
+              leftSprite: heroSprite,
+              text: 'В испытании по вышибалам Ной просто сидит с книгой и саботирует команду. Мы сольём его!'
+            },
+            {
+              speaker: 'Ной',
+              gender: 'male',
+              speakerClass: 'speaker-gwen',
+              leftSprite: heroSprite,
+              centerSprite: 'heather_pose1.png',
+              text: 'Какая жалость. Мой сарказм снова ранил нежные чувства лагерной дивы.'
+            }
+          ],
+          choice: {
+            prompt: 'Как действовать по указке Хизер?',
+            options: [
+              {
+                text: 'Жестко надавить на Ноя: "Убирайся с острова, лентяй!"',
+                impact: 'Хизер в восторге!',
+                emotion: { type: 'good', text: '+ Одобрение Хизер! 👑' },
+                relations: { heather: 2 },
+                nextScene: 'scene_dodgeball_climax'
+              },
+              {
+                text: 'Остановить травлю: "Хизер, ты перегибаешь палку."',
+                impact: 'Гнев Хизер!',
+                emotion: { type: 'bad', text: '- Ярость Хизер! ⚡' },
+                relations: { heather: -3, gwen: 2 },
+                nextScene: 'scene_dodgeball_climax'
+              }
+            ]
+          }
+        },
+
+        /* ================= СЮЖЕТНАЯ ЛИНИЯ Б: НОЧНОЙ РЕЙД ДУНКАНА ================= */
+        {
+          id: 'branch_duncan_raid',
+          title: 'Ветка Дункана: Охота за сосисками Шефа',
+          bg: 'bg_campfire.jpg',
+          lines: [
+            {
+              speaker: 'Дункан',
+              gender: 'male',
+              speakerClass: 'speaker-duncan',
+              leftSprite: heroSprite,
+              text: 'Тихо! Шеф спит на кухне с тесаком в руке. Если мы достанем коробку пиццы — мы короли лагеря!'
+            },
+            {
+              speaker: 'Оуэн',
+              gender: 'male',
+              speakerClass: 'speaker-owen',
+              leftSprite: heroSprite,
+              text: '(Громкий шепот) Я чую сыр... и ветчину... Мой живот сейчас споет оперу!'
+            },
+            {
+              speaker: 'Шеф Хатчет',
+              gender: 'male',
+              speakerClass: 'speaker-chef',
+              text: 'КТО ЗДЕСЬ ШАСТАЕТ В ДВА ЧАСА НОЧИ?! А НУ СТОЯТЬ, САЛАГИ!'
+            }
+          ],
+          choice: {
+            prompt: 'Шеф проснулся! Твои действия:',
+            options: [
+              {
+                text: 'Отвлечь Шефа на себя, бросив кастрюлю в угол!',
+                impact: 'Геройский поступок! (+3 Дункан, +3 Оуэн)',
+                emotion: { type: 'good', text: '+ Спасение друзей! 🍕' },
+                relations: { duncan: 3, owen: 3 },
+                nextScene: 'scene_dodgeball_climax'
+              },
+              {
+                text: 'Схватить ящик пиццы и броситься наутёк к баракам!',
+                impact: 'Добыча у команды! (+2 Оуэн)',
+                emotion: { type: 'good', text: '+ Командная пицца! 🍖' },
+                relations: { owen: 2 },
+                nextScene: 'scene_dodgeball_climax'
+              }
+            ]
+          }
+        },
+
+        /* ================= СЮЖЕТНАЯ ЛИНИЯ В: ДРУЖБА С ГВЕН ================= */
+        {
+          id: 'branch_gwen_friendship',
+          title: 'Ветка Гвен: Секреты у ночного костра',
+          bg: 'bg_campfire.jpg',
+          lines: [
+            {
+              speaker: 'Гвен',
+              gender: 'female',
+              speakerClass: 'speaker-gwen',
+              leftSprite: heroSprite,
+              text: 'Спасибо, что не стал прогибаться под Хизер. Здесь почти все фальшивые, ради камер готовы на всё.'
+            },
+            {
+              speaker: 'Гвен',
+              gender: 'female',
+              speakerClass: 'speaker-gwen',
+              leftSprite: heroSprite,
+              text: 'Хизер угрожает прочитать мой личный дневник перед всеми, если я не буду голосовать за её цели.'
+            }
+          ],
+          choice: {
+            prompt: 'Как поддержать Гвен?',
+            options: [
+              {
+                text: 'Пообещать защитить её: "Я найду дневник раньше неё."',
+                impact: 'Искреннее доверие! (+3 Гвен)',
+                emotion: { type: 'good', text: '+ Доверие Гвен! 🖤' },
+                relations: { gwen: 3, heather: -2 },
+                nextScene: 'scene_dodgeball_climax'
+              },
+              {
+                text: 'Посоветовать быть осторожнее с альянсами.',
+                impact: '+1 Гвен',
+                emotion: { type: 'good', text: '+ Мудрый совет! 💡' },
+                relations: { gwen: 1 },
+                nextScene: 'scene_dodgeball_climax'
+              }
+            ]
+          }
+        },
+
+        /* ================= ФИНАЛЬНАЯ БИТВА: ВЫШИБАЛЫ ================= */
+        {
+          id: 'scene_dodgeball_climax',
+          title: 'Испытание: Решающий бросок в вышибалы',
+          bg: 'bg_lake.jpg',
+          lines: [
+            {
+              speaker: 'Крис Маклин',
+              gender: 'male',
+              speakerClass: 'speaker-chris',
+              text: 'Финал матча по вышибалам! Последний мяч у Сусликов! На кону победа или изгнание у костра!'
+            },
+            {
+              speaker: 'Хизер',
+              gender: 'female',
+              speakerClass: 'speaker-heather',
+              centerSprite: 'heather_pose1.png',
+              leftSprite: heroSprite,
+              text: 'БРОСАЙ В ДУНКАНА, НЕ ТОРМОЗИ!'
+            }
+          ],
+          choice: {
+            prompt: 'Куда направить победный бросок?',
+            options: [
+              {
+                text: 'Пушечный бросок по Дункану со всей силы!',
+                impact: 'Точное попадание!',
+                emotion: { type: 'good', text: '+ Триумф Сусликов! 🏆' },
+                relations: { owen: 2, heather: 1 },
+                nextScene: 'scene_campfire_ceremony'
+              },
+              {
+                text: 'Хитрый финт и пас Оуэну для решающего удара!',
+                impact: 'Оуэн сокрушает соперников!',
+                emotion: { type: 'good', text: '+ Любимец лагеря Оуэн! 🍖' },
+                relations: { owen: 3, gwen: 2 },
+                nextScene: 'scene_campfire_ceremony'
+              }
+            ]
+          }
+        },
+
+        /* ================= ЦЕРЕМОНИЯ У КОСТРА ================= */
+        {
+          id: 'scene_campfire_ceremony',
+          title: 'Церемония у костра: Изгнание на Катере Неудачников',
+          bg: 'bg_campfire.jpg',
+          lines: [
+            {
+              speaker: 'Крис Маклин',
+              gender: 'male',
+              speakerClass: 'speaker-chris',
+              text: 'Суслики проиграли сегодняшний день! Время Церемонии у костра!'
+            },
+            {
+              speaker: 'Крис Маклин',
+              gender: 'male',
+              speakerClass: 'speaker-chris',
+              text: 'Перед вами зефирки. Тот, кто не получит зефир, навсегда покинет остров Ваванаква!'
+            },
+            {
+              speaker: 'Хизер',
+              gender: 'female',
+              speakerClass: 'speaker-heather',
+              centerSprite: 'heather_pose2.png',
+              leftSprite: heroSprite,
+              text: `Помни наш уговор, ${heroName}. Голосуй правильно, если хочешь дожить до финала.`
+            }
+          ],
+          triggerVoting: true
+        }
+      ];
+    }
+
+    let storyScript = buildStoryScript('lolita');
+
+    // UI Elements
+    const elGame = document.getElementById('game-container');
+    const elBg = document.getElementById('bg-layer');
+    const elDialogueBox = document.getElementById('dialogue-box');
+    const elSpeaker = document.getElementById('speaker-badge');
+    const elText = document.getElementById('dialogue-text');
+    const elIndicator = document.getElementById('dialogue-indicator');
+    const elEpisodeChip = document.getElementById('hud-episode-chip');
+    const elFloater = document.getElementById('emotion-floater');
+
+    const slotLeft = document.getElementById('slot-left');
+    const slotCenter = document.getElementById('slot-center');
+    const imgLeft = document.getElementById('img-sprite-left');
+    const imgCenter = document.getElementById('img-sprite-center');
+
+    const elChoicesContainer = document.getElementById('choices-container');
+    const elChoicesPrompt = document.getElementById('choices-prompt');
+    const elChoicesList = document.getElementById('choices-list');
+
+    const elStartScreen = document.getElementById('start-screen');
+    const elVotingModal = document.getElementById('voting-modal');
+    const elVotingTargets = document.getElementById('voting-targets');
+    const elBtnConfirmVote = document.getElementById('btn-confirm-vote');
+
+    const elHistoryModal = document.getElementById('history-modal');
+    const elHistoryList = document.getElementById('history-list');
+    const elToast = document.getElementById('status-toast');
+
+    // HUD Buttons
+    const btnBgm = document.getElementById('btn-bgm');
+    const btnVoice = document.getElementById('btn-voice');
+    const btnSound = document.getElementById('btn-sound');
+    const btnAuto = document.getElementById('btn-auto');
+    const btnLog = document.getElementById('btn-log');
+    const btnSave = document.getElementById('btn-save');
+    const btnFullscreen = document.getElementById('btn-fullscreen');
+    const btnStartGame = document.getElementById('btn-start-game');
+    const btnContinueGame = document.getElementById('btn-continue-game');
+    const btnInstallPwa = document.getElementById('btn-install-pwa');
+    const btnCloseLog = document.getElementById('btn-close-log');
+
+    // Show Emotion Floating Feedback
+    function triggerEmotionFeedback(emotion) {
+      if (!emotion) return;
+      elFloater.textContent = emotion.text;
+      elFloater.className = emotion.type === 'good' ? 'good' : 'bad';
+
+      if (emotion.type === 'good') {
+        audio.playGoodEmotion();
+        slotCenter.classList.add('happy');
+        setTimeout(() => slotCenter.classList.remove('happy'), 500);
+      } else {
+        audio.playBadEmotion();
+        elGame.classList.add('shake-screen');
+        slotCenter.classList.add('angry');
+        setTimeout(() => {
+          elGame.classList.remove('shake-screen');
+          slotCenter.classList.remove('angry');
+        }, 450);
+      }
+
+      setTimeout(() => {
+        elFloater.className = '';
+      }, 1800);
+    }
+
+    // Character Selection
+    function selectHero(heroKey) {
+      state.hero = heroKey;
+      audio.playClick();
+      document.getElementById('card-lolita').classList.toggle('selected', heroKey === 'lolita');
+      document.getElementById('card-piter').classList.toggle('selected', heroKey === 'piter');
+    }
+    window.selectHero = selectHero;
+
+    // Toast
+    function showToast(msg) {
+      elToast.textContent = msg;
+      elToast.classList.add('active');
+      setTimeout(() => elToast.classList.remove('active'), 2000);
+    }
+
+    // Sprites Update
+    function updateSprites(line) {
+      if (line.leftSprite) {
+        if (imgLeft.getAttribute('src') !== line.leftSprite) {
+          slotLeft.classList.add('hidden');
+          setTimeout(() => {
+            imgLeft.src = line.leftSprite;
+            slotLeft.classList.remove('hidden');
+          }, 120);
+        } else {
+          slotLeft.classList.remove('hidden');
+        }
+      } else {
+        slotLeft.classList.add('hidden');
+      }
+
+      if (line.centerSprite) {
+        if (imgCenter.getAttribute('src') !== line.centerSprite) {
+          slotCenter.classList.add('hidden');
+          setTimeout(() => {
+            imgCenter.src = line.centerSprite;
+            slotCenter.classList.remove('hidden');
+          }, 120);
+        } else {
+          slotCenter.classList.remove('hidden');
+        }
+      } else {
+        slotCenter.classList.add('hidden');
+      }
+
+      if (line.speakerClass === 'speaker-heather') {
+        slotCenter.classList.remove('inactive');
+        slotLeft.classList.add('inactive');
+      } else {
+        slotLeft.classList.remove('inactive');
+        slotCenter.classList.add('inactive');
+      }
+    }
+
+    // Typewriter with Voice Synchronization
+    function typeText(fullText, speaker, gender, onComplete) {
+      if (state.typewriterTimer) clearInterval(state.typewriterTimer);
+      state.isTyping = true;
+      elText.textContent = '';
+      elIndicator.style.display = 'none';
+
+      // Speak text aloud using character-specific voice
+      audio.speakDialogue(speaker, fullText, gender);
+
+      let charIndex = 0;
+      state.typewriterTimer = setInterval(() => {
+        if (charIndex < fullText.length) {
+          elText.textContent += fullText[charIndex];
+          if (charIndex % 3 === 0) {
+            audio.playTypeKey();
+          }
+          charIndex++;
+        } else {
+          clearInterval(state.typewriterTimer);
+          state.isTyping = false;
+          elIndicator.style.display = 'block';
+          if (onComplete) onComplete();
+        }
+      }, 22);
+    }
+
+    function completeTypingInstantly(fullText) {
+      if (state.typewriterTimer) clearInterval(state.typewriterTimer);
+      state.isTyping = false;
+      elText.textContent = fullText;
+      elIndicator.style.display = 'block';
+    }
+
+    // Render Scene & Line
+    function renderCurrentLine() {
+      const scene = storyScript[state.sceneIndex];
+      if (!scene) return;
+
+      if (scene.bg && !elBg.style.backgroundImage.includes(scene.bg)) {
+        elBg.style.backgroundImage = `url('${scene.bg}')`;
+      }
+      elEpisodeChip.textContent = scene.title || 'Total Drama Island';
+
+      const line = scene.lines[state.dialogueIndex];
+      if (!line) {
+        if (scene.triggerVoting) {
+          openVotingModal();
+          return;
+        }
+        if (scene.choice) {
+          showChoices(scene.choice);
+          return;
+        }
+        if (state.sceneIndex < storyScript.length - 1) {
+          state.sceneIndex++;
+          state.dialogueIndex = 0;
+          renderCurrentLine();
+        }
+        return;
+      }
+
+      elSpeaker.textContent = line.speaker;
+      elSpeaker.className = '';
+      if (line.speakerClass) elSpeaker.classList.add(line.speakerClass);
+
+      updateSprites(line);
+      state.history.push({ speaker: line.speaker, text: line.text });
+      saveGame(false);
+
+      typeText(line.text, line.speaker, line.gender || 'male', () => {
+        if (state.autoPlay) {
+          state.autoTimer = setTimeout(advanceDialogue, 2600);
+        }
+      });
+    }
+
+    function advanceDialogue() {
+      if (elChoicesContainer.classList.contains('active') || elVotingModal.classList.contains('active')) {
+        return;
+      }
+
+      const scene = storyScript[state.sceneIndex];
+      if (!scene) return;
+      const line = scene.lines[state.dialogueIndex];
+
+      if (state.isTyping && line) {
+        completeTypingInstantly(line.text);
+        audio.playClick();
+        return;
+      }
+
+      audio.playClick();
+      state.dialogueIndex++;
+      renderCurrentLine();
+    }
+
+    elDialogueBox.addEventListener('click', advanceDialogue);
+
+    // Show Choice Options
+    function showChoices(choiceData) {
+      elChoicesPrompt.textContent = choiceData.prompt || 'ТВОЙ ВЫБОР:';
+      elChoicesList.innerHTML = '';
+
+      choiceData.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.innerHTML = `
+          <div class="choice-marker">${idx + 1}</div>
+          <div style="flex:1;">${opt.text}</div>
+          ${opt.impact ? `<div class="choice-impact">${opt.impact}</div>` : ''}
+        `;
+        btn.onclick = () => {
+          audio.playClick();
+          if (opt.relations) {
+            Object.keys(opt.relations).forEach((k) => {
+              state.relations[k] = (state.relations[k] || 0) + opt.relations[k];
+            });
+          }
+          if (opt.emotion) {
+            triggerEmotionFeedback(opt.emotion);
+          }
+          elChoicesContainer.classList.remove('active');
+
+          const targetSceneIdx = storyScript.findIndex((s) => s.id === opt.nextScene);
+          if (targetSceneIdx !== -1) {
+            state.sceneIndex = targetSceneIdx;
+            state.dialogueIndex = 0;
+            renderCurrentLine();
+          } else {
+            state.sceneIndex++;
+            state.dialogueIndex = 0;
+            renderCurrentLine();
+          }
+        };
+        elChoicesList.appendChild(btn);
+      });
+
+      elChoicesContainer.classList.add('active');
+    }
+
+    // Voting Ceremony
+    function openVotingModal() {
+      audio.playCampfireSting();
+      elVotingTargets.innerHTML = '';
+      state.selectedVoteTarget = null;
+
+      const candidates = [
+        { id: 'noah', name: 'Ной', votes: 'Голоса: 4 (лентяй в вышибалах)' },
+        { id: 'heather', name: 'Хизер', votes: 'Голоса: 3 (всех достала)' },
+        { id: 'gwen', name: 'Гвен', votes: 'Голоса: 2 (замкнутая готка)' },
+        { id: 'lindsay', name: 'Линдси', votes: 'Голоса: 1 (глупит)' },
+        { id: 'owen', name: 'Оуэн', votes: 'Голоса: 1 (съел всё мясо)' }
+      ];
+
+      candidates.forEach((cand) => {
+        const btn = document.createElement('button');
+        btn.className = 'voting-target-btn';
+        btn.innerHTML = `
+          <div style="font-size:18px;">👤</div>
+          <div>${cand.name}</div>
+          <div style="font-size:10px; color:#94a3b8; text-align:center;">${cand.votes}</div>
+        `;
+        btn.onclick = () => {
+          audio.playClick();
+          document.querySelectorAll('.voting-target-btn').forEach((b) => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          state.selectedVoteTarget = cand.id;
+        };
+        elVotingTargets.appendChild(btn);
+      });
+
+      elVotingModal.classList.add('active');
+    }
+
+    elBtnConfirmVote.onclick = () => {
+      if (!state.selectedVoteTarget) {
+        alert('Выберите участника для изгнания!');
+        return;
+      }
+      audio.playCampfireSting();
+      elVotingModal.classList.remove('active');
+
+      const eliminated = (state.selectedVoteTarget === 'heather' && state.relations.heather < 0) ? 'Хизер' : 'Ной';
+      state.eliminatedContestants.push(eliminated);
+
+      const resultScene = {
+        id: 'scene_voting_result',
+        title: 'Итоги церемонии: Катер Неудачников',
+        bg: 'bg_campfire.jpg',
+        lines: [
+          {
+            speaker: 'Крис Маклин',
+            gender: 'male',
+            speakerClass: 'speaker-chris',
+            text: `Голоса подсчитаны! ${state.hero === 'lolita' ? 'Лолита' : 'Питер'} отдал(а) решающий голос!`
+          },
+          {
+            speaker: 'Крис Маклин',
+            gender: 'male',
+            speakerClass: 'speaker-chris',
+            text: 'Последний зефир сегодняшнего вечера получает... ГВЕН!'
+          },
+          {
+            speaker: 'Крис Маклин',
+            gender: 'male',
+            speakerClass: 'speaker-chris',
+            centerSprite: eliminated === 'Хизер' ? 'heather_pose1.png' : null,
+            text: `${eliminated.toUpperCase()}! Для тебя зефира нет! Ты должен немедленно пройти на Причал Позора и сесть в Катер Неудачников!`
+          },
+          {
+            speaker: eliminated,
+            gender: eliminated === 'Хизер' ? 'female' : 'male',
+            speakerClass: eliminated === 'Хизер' ? 'speaker-heather' : 'speaker-gwen',
+            centerSprite: eliminated === 'Хизер' ? 'heather_pose1.png' : null,
+            text: eliminated === 'Хизер'
+              ? 'ЭТО НЕВЕРОЯТНО! ВЫ ПОЖАЛЕЕТЕ! ВЫ ВСЕ БЕЗ МЕНЯ ВЫЛЕТИТЕ СЛЕДУЮЩИМИ!'
+              : 'Ну и прекрасно. Наконец-то я смогу почитать книгу в нормальной тишине.'
+          },
+          {
+            speaker: 'Крис Маклин',
+            gender: 'male',
+            speakerClass: 'speaker-chris',
+            text: 'Кто покинет остров в следующей серии? Узнаете в TOTAL DRAMA ISLAND!'
+          }
+        ]
+      };
+
+      storyScript.push(resultScene);
+      state.sceneIndex = storyScript.length - 1;
+      state.dialogueIndex = 0;
+      renderCurrentLine();
+    };
+
+    // Save & Load (localStorage)
+    const SAVE_KEY = 'tdi_island_novel_save_v2';
+
+    function saveGame(notify = true) {
+      const saveData = {
+        hero: state.hero,
+        sceneIndex: state.sceneIndex,
+        dialogueIndex: state.dialogueIndex,
+        relations: state.relations,
+        eliminatedContestants: state.eliminatedContestants,
+        timestamp: new Date().toLocaleString()
+      };
+      try {
+        localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
+        if (notify) showToast('Игра успешно сохранена!');
+        checkContinueButton();
+      } catch (e) {
+        console.warn('Save error:', e);
+      }
+    }
+
+    function loadGame() {
+      try {
+        const raw = localStorage.getItem(SAVE_KEY);
+        if (!raw) return false;
+        const data = JSON.parse(raw);
+        state.hero = data.hero || 'lolita';
+        storyScript = buildStoryScript(state.hero);
+        state.sceneIndex = data.sceneIndex || 0;
+        state.dialogueIndex = data.dialogueIndex || 0;
+        state.relations = data.relations || { heather: 0, gwen: 0, owen: 0, duncan: 0, courtney: 0 };
+        state.eliminatedContestants = data.eliminatedContestants || [];
+
+        elStartScreen.classList.add('hidden');
+        renderCurrentLine();
+        showToast('Сохранение загружено!');
+        audio.startBGM();
+        return true;
+      } catch (e) {
+        console.warn('Load error:', e);
+        return false;
+      }
+    }
+
+    function checkContinueButton() {
+      const raw = localStorage.getItem(SAVE_KEY);
+      if (raw) {
+        btnContinueGame.removeAttribute('disabled');
+        btnContinueGame.textContent = 'ПРОДОЛЖИТЬ ИГРУ';
+      } else {
+        btnContinueGame.setAttribute('disabled', 'true');
+        btnContinueGame.textContent = 'ПРОДОЛЖИТЬ (НЕТ СОХРАНЕНИЙ)';
+      }
+    }
+
+    // Start / Continue Actions
+    btnStartGame.onclick = () => {
+      audio.init();
+      audio.startBGM();
+      storyScript = buildStoryScript(state.hero);
+      state.sceneIndex = 0;
+      state.dialogueIndex = 0;
+      state.history = [];
+      elStartScreen.classList.add('hidden');
+      renderCurrentLine();
+    };
+
+    btnContinueGame.onclick = () => {
+      if (loadGame()) {
+        elStartScreen.classList.add('hidden');
+      }
+    };
+
+    btnSave.onclick = () => {
+      audio.playClick();
+      saveGame(true);
+    };
+
+    // BGM Toggle
+    btnBgm.onclick = () => {
+      audio.init();
+      audio.bgmMuted = !audio.bgmMuted;
+      document.getElementById('bgm-icon').textContent = audio.bgmMuted ? '🎵 BGM: ВЫКЛ' : '🎵 BGM: ВКЛ';
+      btnBgm.classList.toggle('active', !audio.bgmMuted);
+      if (audio.bgmMuted) {
+        audio.stopBGM();
+      } else {
+        audio.startBGM();
+      }
+    };
+
+    // Voice Synthesis Toggle
+    btnVoice.onclick = () => {
+      audio.voiceEnabled = !audio.voiceEnabled;
+      document.getElementById('voice-icon').textContent = audio.voiceEnabled ? '🗣️ ГОЛОС: ВКЛ' : '🗣️ ГОЛОС: ВЫКЛ';
+      btnVoice.classList.toggle('active', audio.voiceEnabled);
+      if (!audio.voiceEnabled && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      audio.playClick();
+    };
+
+    // SFX Toggle
+    btnSound.onclick = () => {
+      audio.sfxMuted = !audio.sfxMuted;
+      document.getElementById('sound-icon').textContent = audio.sfxMuted ? '🔇 SFX' : '🔊 SFX';
+      audio.playClick();
+    };
+
+    // Auto Play
+    btnAuto.onclick = () => {
+      audio.playClick();
+      state.autoPlay = !state.autoPlay;
+      btnAuto.classList.toggle('active', state.autoPlay);
+      if (state.autoPlay && !state.isTyping) {
+        advanceDialogue();
+      }
+    };
+
+    // History Log
+    btnLog.onclick = () => {
+      audio.playClick();
+      elHistoryList.innerHTML = '';
+      state.history.forEach((h) => {
+        const row = document.createElement('div');
+        row.className = 'history-row';
+        row.innerHTML = `
+          <div class="history-speaker">${h.speaker}</div>
+          <div class="history-text">${h.text}</div>
+        `;
+        elHistoryList.appendChild(row);
+      });
+      elHistoryModal.classList.add('active');
+    };
+
+    btnCloseLog.onclick = () => {
+      audio.playClick();
+      elHistoryModal.classList.remove('active');
+    };
+
+    // Fullscreen Toggle
+    btnFullscreen.onclick = () => {
+      audio.playClick();
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    };
+
+    // Keyboard support (Space / Enter)
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' || e.code === 'Enter') {
+        e.preventDefault();
+        advanceDialogue();
+      }
+    });
+
+    // PWA Install Prompt handling
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      btnInstallPwa.style.display = 'flex';
+    });
+
+    btnInstallPwa.onclick = async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        btnInstallPwa.style.display = 'none';
+      }
+      deferredPrompt = null;
+    };
+
+    // Register Service Worker for PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js')
+          .then((reg) => console.log('TDI SW Registered', reg))
+          .catch((err) => console.log('TDI SW Error', err));
+      });
+    }
+
+    checkContinueButton();
+  </script>
+</body>
 </html>
